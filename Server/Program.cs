@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Server.BusinessLogic;
+using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -7,10 +8,12 @@ namespace Server
 {
     class Program
     {
+        static StudentLogic studentLogic;
         static void Main(string[] args)
         {
             Socket serverSocket = ConfigServer();
             new Thread(() => ListenClients(serverSocket)).Start();
+            studentLogic = new StudentLogic();
             ShowMenu();
         }
 
@@ -48,7 +51,33 @@ namespace Server
             Console.WriteLine("3- Delete course");
             Console.WriteLine("4- Assign result to student");
             Console.WriteLine("4- Send result to student");
-            Console.ReadLine();
+            MenuInterface();
+        }
+
+        private static void MenuInterface()
+        {
+            string option;
+            option = Console.ReadLine();
+            switch (option)
+            {
+                case "1":
+                    CreateStudent();
+                    break;
+                default:
+                    break;
+            }
+
+        }
+
+        private static void CreateStudent()
+        {
+            Console.WriteLine("StudentId: ");
+            string stringStudentId = Console.ReadLine();
+            int studentId;
+            Int32.TryParse(stringStudentId, out studentId);
+            Console.WriteLine("Email: ");
+            string studentEmail = Console.ReadLine();
+            studentLogic.AddStudent(studentId, studentEmail);
         }
     }
 }
