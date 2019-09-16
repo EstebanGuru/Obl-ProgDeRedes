@@ -3,13 +3,17 @@ using Server.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace Server.BusinessLogic
 {
     public class StudentLogic
     {
-        public static IList<Student> Students { get; set; }
+        public IList<Student> Students { get; set; }
+
+        public StudentLogic()
+        {
+            Students = new List<Student>();
+        }
         public void AddStudent(int studentId, string studentEmail)
         {
             ValidateId(studentId);
@@ -20,7 +24,7 @@ namespace Server.BusinessLogic
 
         private void ValidateId(int studentId)
         {
-            if (Students.ToList().Exists(student => student.StudentId == studentId))
+            if (Students.ToList().Exists(student => student.Id == studentId))
             {
                 throw new InvalidStudentId();
             }
@@ -28,20 +32,10 @@ namespace Server.BusinessLogic
 
         private void ValidateEmail(string studentEmail)
         {
-            string email = ValidateEmailFormat(studentEmail);
-            if (Students.ToList().Exists(student => student.Email == email))
+            if (Students.ToList().Exists(student => student.Email == studentEmail))
             {
                 throw new InvalidStudentEmail();
             }
-        }
-        public string ValidateEmailFormat(string email)
-        {
-            Regex regex = new Regex(@"^[\w!#$%&'*+\-/=?\^_`{|}~]+(\.[\w!#$%&'*+\-/=?\^_`{|}~]+)*" + "@" + @"((([\-\w]+\.)+[a-zA-Z]{2,4})|(([0-9]{1,3}\.){3}[0-9]{1,3}))$");
-            if (regex.IsMatch(email))
-            {
-                return email;
-            }
-            throw new InvalidEmail();
         }
     }
 }
