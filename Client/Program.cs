@@ -17,9 +17,9 @@ namespace Client
         private static void Connect()
         {
             var clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            var ipEndPoint = new IPEndPoint(IPAddress.Parse("192.168.1.47"), 0);
+            var ipEndPoint = new IPEndPoint(IPAddress.Parse("172.29.2.255"), 0);
             clientSocket.Bind(ipEndPoint);
-            clientSocket.Connect(new IPEndPoint(IPAddress.Parse("192.168.1.47"), 6000));
+            clientSocket.Connect(new IPEndPoint(IPAddress.Parse("172.29.2.255"), 6000));
         }
 
         private static void Login()

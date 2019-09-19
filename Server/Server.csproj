@@ -52,6 +52,7 @@
     <Compile Include="BusinessLogic\StudentLogic.cs" />
     <Compile Include="Domain\Course.cs" />
     <Compile Include="Domain\Student.cs" />
+    <Compile Include="Domain\StudentCourse.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UI\Menu.cs" />

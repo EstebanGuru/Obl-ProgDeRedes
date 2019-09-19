@@ -82,48 +82,41 @@ namespace Server
             }
 
         }
-        private static bool CreateStudent()
+        private static void CreateStudent()
         {
-            while (true)
+            Console.WriteLine("*********  Create student  *********");
+            int studentId = UI.Menu.ReadNumber("Student Id: ");
+            string studentEmail = UI.Menu.ReadEmail();
+            try
             {
-                Console.WriteLine("*********  Create student  *********");
-                int studentId = UI.Menu.ReadNumber("Student Id: ");
-                string studentEmail = UI.Menu.ReadEmail();
-                try
-                {
-                    studentLogic.AddStudent(studentId, studentEmail);
-                    Console.WriteLine("Student created correctly");
-                    return true;
-                }
-                catch (StudentException e)
-                {
-                    Console.WriteLine(e.Message);
-                    Console.WriteLine("Try again please.");
-                }
+                studentLogic.AddStudent(studentId, studentEmail);
+                Console.WriteLine("Student created correctly");
+            }
+            catch (StudentException e)
+            {
+                Console.WriteLine(e.Message);
+                Console.WriteLine("Try again please.");
+                CreateStudent();
             }
         }
 
-        private static bool CreateCourse()
+        private static void CreateCourse()
         {
-            while (true)
+            Console.WriteLine("*********  Create course  *********");
+            int courseId = UI.Menu.ReadNumber("Course Id: ");
+            Console.WriteLine("Course name: ");
+            string courseName = Console.ReadLine();
+            try
             {
-                Console.WriteLine("*********  Create course  *********");
-                int courseId = UI.Menu.ReadNumber("Course Id: ");
-                Console.WriteLine("Course name: ");
-                string courseName = Console.ReadLine();
-                try
-                {
-                    courseLogic.AddCourse(courseId, courseName);
-                    Console.WriteLine("Course created correctly");
-                    return true;
-                }
-                catch (CourseException e)
-                {
-                    Console.WriteLine(e.Message);
-                    Console.WriteLine("Try again please.");
-                }
+                courseLogic.AddCourse(courseId, courseName);
+                Console.WriteLine("Course created correctly");
             }
-
+            catch (CourseException e)
+            {
+                Console.WriteLine(e.Message);
+                Console.WriteLine("Try again please.");
+                CreateCourse();
+            }
         }
     }
 }
