@@ -24,11 +24,11 @@ namespace Server.UI
             }
         }
 
-        public static int ReadNumber()
+        public static int ReadNumber(string field)
         {
             while (true)
             {
-                Console.WriteLine("StudentId: ");
+                Console.WriteLine(field);
                 string stringStudentId = Console.ReadLine();
                 int studentId;
                 if (Int32.TryParse(stringStudentId, out studentId))

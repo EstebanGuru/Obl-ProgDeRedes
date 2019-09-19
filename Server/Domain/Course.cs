@@ -10,5 +10,12 @@ namespace Server.Domain
         public int Id { get; set; }
         public string Name { get; set; }
         public IList<Student> Students { get; set; }
+
+        public Course(int courseId, string courseName)
+        {
+            Name = courseName;
+            Id = courseId;
+            Students = new List<Student>();
+        }
     }
 }

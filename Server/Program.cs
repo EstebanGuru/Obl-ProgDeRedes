@@ -11,18 +11,20 @@ namespace Server
     class Program
     {
         static StudentLogic studentLogic;
+        static CourseLogic courseLogic;
         static void Main(string[] args)
         {
             Socket serverSocket = ConfigServer();
             new Thread(() => ListenClients(serverSocket)).Start();
             studentLogic = new StudentLogic();
+            courseLogic = new CourseLogic();
             new Thread(() => ShowMenu()).Start();
         }
 
         private static Socket ConfigServer()
         {
             var serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            var ipEndPoint = new IPEndPoint(IPAddress.Parse("192.168.1.47"), 6000);
+            var ipEndPoint = new IPEndPoint(IPAddress.Parse("172.29.2.255"), 6000);
             serverSocket.Bind(ipEndPoint);
             serverSocket.Listen(1000);
             return serverSocket;
@@ -72,6 +74,9 @@ namespace Server
                 case "1":
                     CreateStudent();
                     break;
+                case "2":
+                    CreateCourse();
+                        break;
                 default:
                     break;
             }
@@ -82,7 +87,7 @@ namespace Server
             while (true)
             {
                 Console.WriteLine("*********  Create student  *********");
-                int studentId = UI.Menu.ReadNumber();
+                int studentId = UI.Menu.ReadNumber("Student Id: ");
                 string studentEmail = UI.Menu.ReadEmail();
                 try
                 {
@@ -91,6 +96,28 @@ namespace Server
                     return true;
                 }
                 catch (StudentException e)
+                {
+                    Console.WriteLine(e.Message);
+                    Console.WriteLine("Try again please.");
+                }
+            }
+        }
+
+        private static bool CreateCourse()
+        {
+            while (true)
+            {
+                Console.WriteLine("*********  Create course  *********");
+                int courseId = UI.Menu.ReadNumber("Course Id: ");
+                Console.WriteLine("Course name: ");
+                string courseName = Console.ReadLine();
+                try
+                {
+                    courseLogic.AddCourse(courseId, courseName);
+                    Console.WriteLine("Course created correctly");
+                    return true;
+                }
+                catch (CourseException e)
                 {
                     Console.WriteLine(e.Message);
                     Console.WriteLine("Try again please.");
