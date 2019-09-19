@@ -41,8 +41,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BusinessLogic.Exceptions\CourseException.cs" />
+    <Compile Include="BusinessLogic.Exceptions\InvalidCourseId.cs" />
+    <Compile Include="BusinessLogic.Exceptions\InvalidCourseName.cs" />
+    <Compile Include="BusinessLogic.Exceptions\InvalidEmail.cs" />
+    <Compile Include="BusinessLogic.Exceptions\InvalidStudentEmail.cs" />
+    <Compile Include="BusinessLogic.Exceptions\InvalidStudentId.cs" />
+    <Compile Include="BusinessLogic.Exceptions\StudentException.cs" />
+    <Compile Include="BusinessLogic\CourseLogic.cs" />
+    <Compile Include="BusinessLogic\StudentLogic.cs" />
+    <Compile Include="Domain\Course.cs" />
+    <Compile Include="Domain\Student.cs" />
+    <Compile Include="Domain\StudentCourse.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UI\Menu.cs" />
+    <Compile Include="Utils.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
