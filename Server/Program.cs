@@ -122,5 +122,39 @@ namespace Server
                 CreateCourse();
             }
         }
+
+        private static void DeleteCourse()
+        {
+            Console.WriteLine("*********  Delete course  *********");
+            Console.WriteLine("Course name: ");
+            string courseName = Console.ReadLine();
+            courseLogic.DeleteCourse(courseName);
+            Console.WriteLine("Course deleted correctly");
+        }
+
+        private static void AddStudentToCourse()
+        {
+            Console.WriteLine("*********  Add student to course  *********");
+            int studentId = UI.Menu.ReadNumber("Student Id: ");
+            Console.WriteLine("Course name: ");
+            string courseName = Console.ReadLine();
+            try
+            {
+                courseLogic.AddStudent(studentId, courseName);
+                Console.WriteLine("Student correc");
+            } catch (InvalidStudentId)
+            {
+                Console.WriteLine("Student id does not exists.");
+                Console.WriteLine("Try again please.");
+                AddStudentToCourse();
+            }
+            catch (InvalidCourseName)
+            {
+                Console.WriteLine("Course name does not exists.");
+                Console.WriteLine("Try again please.");
+                AddStudentToCourse();
+            }
+        }
+
     }
 }

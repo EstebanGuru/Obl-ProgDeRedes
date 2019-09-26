@@ -8,7 +8,19 @@ namespace Server.Domain
     public class StudentCourse
     {
         public int StudentId { get; set; }
-        public int CourseId { get; set; }
+        public string CourseName { get; set; }
         public int Calification { get; set; }
+
+        public StudentCourse(int studentId, string courseName)
+        {
+            StudentId = studentId;
+            CourseName = courseName;
+            Calification = -1;
+        }
+
+        public void AddCalification(int calification)
+        {
+            Calification = calification;
+        }
     }
 }

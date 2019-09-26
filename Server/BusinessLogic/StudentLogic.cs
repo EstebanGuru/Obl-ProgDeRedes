@@ -8,12 +8,10 @@ namespace Server.BusinessLogic
 {
     public class StudentLogic
     {
-        public IList<Student> Students { get; set; }
+        public static IList<Student> Students { get; set; } = new List<Student>();
 
-        public StudentLogic()
-        {
-            Students = new List<Student>();
-        }
+        public StudentLogic() { }
+
         public void AddStudent(int studentId, string studentEmail)
         {
             ValidateId(studentId);
@@ -22,7 +20,12 @@ namespace Server.BusinessLogic
             Students.Add(student);
         }
 
-        public void ValidateId(int studentId)
+        public Student GetStudent(int studentId)
+        {
+            return Students.ToList().Find(student => student.Id == studentId);
+        }
+
+        private void ValidateId(int studentId)
         {
             if (Students.Count == 0 || Students.ToList().Exists(student => student.Id == studentId))
             {
