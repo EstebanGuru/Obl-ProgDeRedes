@@ -48,6 +48,27 @@ namespace ProtocolLibrary
             socket.Send(messagge);
         }
 
+        public void Send (Socket socket, string header, int command, string data = null)
+        {
+            // Send header
+            var headerInBytes = Encoding.ASCII.GetBytes(header);
+            socket.Send(headerInBytes);
+
+            // Send command
+            var commandInBytes = Encoding.ASCII.GetBytes(command.ToString());
+            socket.Send(commandInBytes);
+
+            // Send data
+            if (data != null)
+            {
+                var lenthOfData = data.Length;
+                SendLenght(lenthOfData, socket);
+                byte[] dataInBytes = new byte[lenthOfData];
+                dataInBytes = Encoding.ASCII.GetBytes(data);
+                SendData(dataInBytes, socket);
+            }
+        }
+
         public string ReceiveString(Socket socket)
         {
             var dataLength = ReceiveLenght(socket);

@@ -25,9 +25,9 @@ namespace Server.BusinessLogic
             return Students.ToList().Find(student => student.Id == studentId);
         }
 
-        private void ValidateId(int studentId)
+        public void ValidateId(int studentId)
         {
-            if (Students.Count == 0 || Students.ToList().Exists(student => student.Id == studentId))
+            if (Students.ToList().Exists(student => student.Id == studentId))
             {
                 throw new InvalidStudentId();
             }
@@ -38,6 +38,15 @@ namespace Server.BusinessLogic
             if (Students.ToList().Exists(student => student.Email == studentEmail))
             {
                 throw new InvalidStudentEmail();
+            }
+        }
+
+        public void ValidateCredentials(int studentId, string password)
+        {
+            Student student =  Students.ToList().Find(s => s.Id == studentId && s.Password == password);
+            if (student == null)
+            {
+                throw new InvalidCredentials();
             }
         }
     }

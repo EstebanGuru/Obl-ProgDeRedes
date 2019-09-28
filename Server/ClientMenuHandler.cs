@@ -26,19 +26,22 @@ namespace Server
 
         public void Run()
         {
-            string messageType = Protocol.RecieveHeader(ClientSocket);
-            int command = Protocol.RecieveCommand(ClientSocket);
-            if (messageType.Equals("REQ"))
+            while (true)
             {
-                HandleRequest(command);
-            }
-            else if (messageType.Equals("RES"))
-            {
-                HandleResponse(command);
-            }
-            else
-            {
-                Console.WriteLine("Something went wrong");
+                string messageType = Protocol.RecieveHeader(ClientSocket);
+                int command = Protocol.RecieveCommand(ClientSocket);
+                if (messageType.Equals("REQ"))
+                {
+                    HandleRequest(command);
+                }
+                else if (messageType.Equals("RES"))
+                {
+                    HandleResponse(command);
+                }
+                else
+                {
+                    Console.WriteLine("Something went wrong");
+                }
             }
         }
 
@@ -66,11 +69,12 @@ namespace Server
             string password = ReceiveString();
             try
             {
-                studentLogic.ValidateId(id);
+                studentLogic.ValidateCredentials(id, password);
+                Protocol.Send(ClientSocket, "RES", 80);
             }
             catch (StudentException e)
             {
-                HandleLoginError(e.Message);
+                Protocol.Send(ClientSocket, "RES", 99, e.Message);
             }
         }
 
@@ -90,7 +94,7 @@ namespace Server
             Protocol.SendData(dataInBytes, ClientSocket);
         }
 
-        private string ReceiveString( )
+        private string ReceiveString()
         {
             var dataLength = Protocol.ReceiveLenght(ClientSocket);
             var dataInBytes = new byte[dataLength];
@@ -98,7 +102,7 @@ namespace Server
             return Encoding.ASCII.GetString(dataInBytes);
         }
 
-   
+
 
     }
 }
