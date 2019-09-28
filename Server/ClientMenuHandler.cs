@@ -64,9 +64,10 @@ namespace Server
 
         private void HandleLogin()
         {
-            string stringId = ReceiveString();
-            int id = int.Parse(stringId);
-            string password = ReceiveString();
+            string credentials = Protocol.ReceiveData(ClientSocket);
+            var arrayCredentials = credentials.Split('#');
+            int id = Int32.Parse(arrayCredentials[0]);
+            string password = arrayCredentials[1];
             try
             {
                 studentLogic.ValidateCredentials(id, password);
@@ -77,32 +78,5 @@ namespace Server
                 Protocol.Send(ClientSocket, "RES", 99, e.Message);
             }
         }
-
-        private void HandleLoginError(string message)
-        {
-            Protocol.SendResponse(ClientSocket);
-            Protocol.SendCommand(ClientSocket, "99");
-            SendString(message);
-        }
-
-        private void SendString(string data)
-        {
-            var lenthOfData = data.Length;
-            Protocol.SendLenght(lenthOfData, ClientSocket);
-            byte[] dataInBytes = new byte[lenthOfData];
-            dataInBytes = Encoding.ASCII.GetBytes(data);
-            Protocol.SendData(dataInBytes, ClientSocket);
-        }
-
-        private string ReceiveString()
-        {
-            var dataLength = Protocol.ReceiveLenght(ClientSocket);
-            var dataInBytes = new byte[dataLength];
-            ClientSocket.Receive(dataInBytes);
-            return Encoding.ASCII.GetString(dataInBytes);
-        }
-
-
-
     }
 }

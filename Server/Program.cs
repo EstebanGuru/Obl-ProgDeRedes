@@ -80,7 +80,7 @@ namespace Server
                     break;
                 case "2":
                     CreateCourse();
-                        break;
+                    break;
                 default:
                     break;
             }
@@ -142,7 +142,8 @@ namespace Server
             {
                 courseLogic.AddStudent(studentId, courseName);
                 Console.WriteLine("Student correc");
-            } catch (InvalidStudentId)
+            }
+            catch (InvalidStudentId)
             {
                 Console.WriteLine("Student id does not exists.");
                 Console.WriteLine("Try again please.");

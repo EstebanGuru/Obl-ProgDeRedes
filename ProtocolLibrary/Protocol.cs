@@ -69,6 +69,14 @@ namespace ProtocolLibrary
             }
         }
 
+        public string ReceiveData(Socket socket)
+        {
+            var dataLength = ReceiveLenght(socket);
+            var dataInBytes = new byte[dataLength];
+            socket.Receive(dataInBytes);
+            return Encoding.ASCII.GetString(dataInBytes);
+        }
+
         public string ReceiveString(Socket socket)
         {
             var dataLength = ReceiveLenght(socket);

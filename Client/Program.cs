@@ -12,7 +12,7 @@ namespace Client
     {
         private static Socket clientSocket;
         private static Protocol Protocol;
-        private static bool login = false;
+        private static int studentNumber = -1;
         static void Main(string[] args)
         {
             Protocol = new Protocol();
@@ -35,15 +35,13 @@ namespace Client
             Console.WriteLine("");
             Console.WriteLine("Login");
             Console.Write("Student number: ");
-            string studentNumber = Console.ReadLine();
+            string pStudentNumber = Console.ReadLine();
             Console.Write("Password: ");
             string password = Console.ReadLine();
+            string credentials = string.Join("#", pStudentNumber, password);
             try
             {
-                Protocol.SendRequest(clientSocket);
-                Protocol.SendCommand(clientSocket, "1");
-                SendString(studentNumber);
-                SendString(password);
+                Protocol.Send(clientSocket, "REQ", 1, credentials);
                 string header = Protocol.RecieveHeader(clientSocket);
                 int command = Protocol.RecieveCommand(clientSocket);
                 if (header.Equals("REQ"))
@@ -54,7 +52,7 @@ namespace Client
                 {
                     if (command == 80)
                     {
-                        login = true;
+                        studentNumber = Int32.Parse(pStudentNumber);
                     }
                     if (command == 99)
                     {
@@ -70,31 +68,45 @@ namespace Client
 
         }
 
-        private static void SendString(string data)
-        {
-            var lenthOfData = data.Length;
-            Protocol.SendLenght(lenthOfData, clientSocket);
-            byte[] dataInBytes = new byte[lenthOfData];
-            dataInBytes = Encoding.ASCII.GetBytes(data);
-            Protocol.SendData(dataInBytes, clientSocket);
-        }
-
         private static void ShowMenu()
         {
             while (true)
             {
-                if (login)
+                if (studentNumber != -1)
                 {
                     Console.WriteLine("1- Inscription");
                     Console.WriteLine("2- Available courses");
                     Console.WriteLine("3- Upload");
                     Console.WriteLine("4- Display results");
+                    Console.WriteLine("5- Disconnect");
                     Console.ReadLine();
+                    HandleMenu();
                 }
                 else
                 {
                     Login();
                 }
+            }
+        }
+
+        private static void HandleMenu()
+        {
+            try
+            {
+                int option = Int32.Parse(Console.ReadLine());
+                switch (option)
+                {
+                    case 1:
+                        Console.WriteLine("hola");
+                        break;
+                    default:
+                        Console.WriteLine("hola");
+                        break;
+                }
+            }
+            catch (Exception e)
+            {
+
             }
         }
     }
