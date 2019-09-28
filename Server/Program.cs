@@ -62,7 +62,6 @@ namespace Server
                 Console.WriteLine("2- Create course");
                 Console.WriteLine("3- Delete course");
                 Console.WriteLine("4- Assign result to student");
-                Console.WriteLine("4- Send result to student");
                 Console.WriteLine("*******************************");
                 Console.WriteLine("*******************************");
                 MenuInterface();
@@ -80,6 +79,12 @@ namespace Server
                     break;
                 case "2":
                     CreateCourse();
+                    break;
+                case "3":
+                    DeleteCourse();
+                    break;
+                case "4":
+                    AddCalification();
                     break;
                 default:
                     break;
@@ -132,28 +137,27 @@ namespace Server
             Console.WriteLine("Course deleted correctly");
         }
 
-        private static void AddStudentToCourse()
+        private static void AddCalification()
         {
-            Console.WriteLine("*********  Add student to course  *********");
-            int studentId = UI.Menu.ReadNumber("Student Id: ");
-            Console.WriteLine("Course name: ");
-            string courseName = Console.ReadLine();
+            Console.WriteLine("*********  Add calification  *********");
             try
             {
-                courseLogic.AddStudent(studentId, courseName);
-                Console.WriteLine("Student correc");
+                Console.WriteLine("Course name: ");
+                string courseName = Console.ReadLine();
+                Console.WriteLine("Student id: ");
+                int studenId = int.Parse(Console.ReadLine());
+                Console.WriteLine("Calification: ");
+                int calification = int.Parse(Console.ReadLine());
+                courseLogic.AddCalification(courseName, studenId, calification);
+                Console.WriteLine("Calification added correctly");
             }
-            catch (InvalidStudentId)
+            catch (CourseException e)
             {
-                Console.WriteLine("Student id does not exists.");
-                Console.WriteLine("Try again please.");
-                AddStudentToCourse();
+                Console.WriteLine(e.Message);
             }
-            catch (InvalidCourseName)
+            catch (FormatException e)
             {
-                Console.WriteLine("Course name does not exists.");
-                Console.WriteLine("Try again please.");
-                AddStudentToCourse();
+                Console.WriteLine(e.Message);
             }
         }
 

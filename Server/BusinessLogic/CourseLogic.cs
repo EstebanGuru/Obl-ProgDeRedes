@@ -9,7 +9,7 @@ namespace Server.BusinessLogic
     {
         public string CourseName;
         public string Status;
-        
+
         public InscriptionDetail(string courseName, string status)
         {
             CourseName = courseName;
@@ -107,10 +107,11 @@ namespace Server.BusinessLogic
         public void AddCalification(string courseName, int studentId, int calification)
         {
             StudentCourse inscription = Inscriptions.Find(i => i.CourseName == courseName && i.StudentId == studentId);
-            if (inscription != null)
+            if (inscription == null)
             {
-                inscription.AddCalification(calification);
+                throw new CourseException("Student it's not incripted on the course");
             }
+            inscription.AddCalification(calification);
         }
 
         public IList<InscriptionCalification> ListCalifications(int studentId)
