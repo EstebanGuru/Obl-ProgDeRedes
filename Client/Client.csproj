@@ -44,5 +44,11 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ProtocolLibrary\ProtocolLibrary.csproj">
+      <Project>{7357ed7a-9a0e-4a16-a1df-a47a3a7815a6}</Project>
+      <Name>ProtocolLibrary</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

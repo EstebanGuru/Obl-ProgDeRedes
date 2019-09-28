@@ -1,36 +1,78 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
+using ProtocolLibrary;
 
 namespace Client
 {
     class Program
     {
+        private static Socket clientSocket;
+        private static Protocol Protocol;
         static void Main(string[] args)
         {
+            Protocol = new Protocol();
             Console.WriteLine("Press any key to connect");
             Console.ReadKey();
-            Connect();
-            Login();
+            Connect();            
         }
 
         private static void Connect()
         {
-            var clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            var ipEndPoint = new IPEndPoint(IPAddress.Parse("172.29.2.255"), 0);
+            clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            var ipEndPoint = new IPEndPoint(IPAddress.Parse("192.168.1.44"), 0);
             clientSocket.Bind(ipEndPoint);
-            clientSocket.Connect(new IPEndPoint(IPAddress.Parse("172.29.2.255"), 6000));
+            clientSocket.Connect(new IPEndPoint(IPAddress.Parse("192.168.1.44"), 6000));
+            Login();
         }
 
         private static void Login()
         {
-            Console.WriteLine("");
-            Console.WriteLine("Login");
-            Console.Write("Student number: ");
-            var studentNumber = Console.ReadLine();
-            Console.Write("Password: ");
-            var password = Console.ReadLine();
-            ShowMenu();
+            while (true)
+            {
+                Console.WriteLine("");
+                Console.WriteLine("Login");
+                Console.Write("Student number: ");
+                string studentNumber = Console.ReadLine();
+                Console.Write("Password: ");
+                string password = Console.ReadLine();
+                try
+                {
+                    Protocol.SendRequest(clientSocket);
+                    Protocol.SendCommand(clientSocket, "1");
+                    SendString(studentNumber);
+                    SendString(password);
+                    string header = Protocol.RecieveHeader(clientSocket);
+                    int command = Protocol.RecieveCommand(clientSocket);
+                    if (header.Equals("REQ"))
+                    {
+                       
+                    }
+                    else if (header.Equals("RES"))
+                    {
+                        if (command == 99)
+                        {
+                            string mesage = Protocol.ReceiveString(clientSocket);
+                            Console.WriteLine("serivdor responde {0}", mesage);
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+            }
+            
+        }
+
+        private static void SendString(string data)
+        {
+            var lenthOfData = data.Length;
+            Protocol.SendLenght(lenthOfData, clientSocket);
+            byte[] dataInBytes = new byte[lenthOfData];
+            dataInBytes = Encoding.ASCII.GetBytes(data);
+            Protocol.SendData(dataInBytes, clientSocket);
         }
 
         private static void ShowMenu()

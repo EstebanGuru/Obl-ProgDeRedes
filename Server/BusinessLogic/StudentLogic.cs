@@ -22,9 +22,9 @@ namespace Server.BusinessLogic
             Students.Add(student);
         }
 
-        private void ValidateId(int studentId)
+        public void ValidateId(int studentId)
         {
-            if (Students.ToList().Exists(student => student.Id == studentId))
+            if (Students.Count == 0 || Students.ToList().Exists(student => student.Id == studentId))
             {
                 throw new InvalidStudentId();
             }
