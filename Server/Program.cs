@@ -5,6 +5,7 @@ using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using ProtocolLibrary;
 
 namespace Server
 {
@@ -12,19 +13,22 @@ namespace Server
     {
         static StudentLogic studentLogic;
         static CourseLogic courseLogic;
+        static Socket serverSocket;
+        static Protocol Protocol;
         static void Main(string[] args)
         {
-            Socket serverSocket = ConfigServer();
-            new Thread(() => ListenClients(serverSocket)).Start();
             studentLogic = new StudentLogic();
             courseLogic = new CourseLogic();
+            Protocol Protocol = new Protocol();
+            serverSocket = ConfigServer();
+            new Thread(() => ListenClients(serverSocket)).Start();
             new Thread(() => ShowMenu()).Start();
         }
 
         private static Socket ConfigServer()
         {
             var serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            var ipEndPoint = new IPEndPoint(IPAddress.Parse("172.29.2.255"), 6000);
+            var ipEndPoint = new IPEndPoint(IPAddress.Parse("192.168.1.44"), 6000);
             serverSocket.Bind(ipEndPoint);
             serverSocket.Listen(1000);
             return serverSocket;
@@ -43,8 +47,8 @@ namespace Server
         private static void ClientHandler(Socket clientSocket)
         {
             Console.WriteLine("Client connected!");
-            Console.ReadLine();
-            while (true) ;
+            ClientMenuHandler clientHandler = new ClientMenuHandler(clientSocket, serverSocket, studentLogic);
+            clientHandler.Run();
         }
 
         private static void ShowMenu()
