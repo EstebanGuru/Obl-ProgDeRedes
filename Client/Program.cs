@@ -24,16 +24,23 @@ namespace Client
 
         private static void Connect()
         {
-            clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            notificationSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            var ipEndPoint = new IPEndPoint(IPAddress.Parse("192.168.0.101"), 0);
-            clientSocket.Bind(ipEndPoint);
-            clientSocket.Connect(new IPEndPoint(IPAddress.Parse("192.168.0.101"), 6000));
-            var ipNotificationEndPoint = new IPEndPoint(IPAddress.Parse("192.168.0.101"), 0);
-            notificationSocket.Bind(ipNotificationEndPoint);
-            notificationSocket.Connect(new IPEndPoint(IPAddress.Parse("192.168.0.101"), 6000));
-            new Thread(() => ShowMenu()).Start();
-            new Thread(() => DisplayNotifications()).Start();
+            try
+            {
+                clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                notificationSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                var ipEndPoint = new IPEndPoint(IPAddress.Parse("192.168.0.101"), 0);
+                clientSocket.Bind(ipEndPoint);
+                clientSocket.Connect(new IPEndPoint(IPAddress.Parse("192.168.0.101"), 6000));
+                var ipNotificationEndPoint = new IPEndPoint(IPAddress.Parse("192.168.0.101"), 0);
+                notificationSocket.Bind(ipNotificationEndPoint);
+                notificationSocket.Connect(new IPEndPoint(IPAddress.Parse("192.168.0.101"), 6000));
+                new Thread(() => ShowMenu()).Start();
+                new Thread(() => DisplayNotifications()).Start();
+            }
+            catch (Exception e)
+            {
+
+            }
         }
 
         private static void Login()
@@ -93,17 +100,23 @@ namespace Client
         {
             while (true)
             {
-                string messageType = Protocol.ReceiveHeader(notificationSocket);
-                int command = Protocol.ReceiveCommand(notificationSocket);
-                if (messageType.Equals("RES"))
+                try
                 {
-                    if (command == 10)
+                    string messageType = Protocol.ReceiveHeader(notificationSocket);
+                    int command = Protocol.ReceiveCommand(notificationSocket);
+                    if (messageType.Equals("RES"))
                     {
-                        Console.WriteLine("");
-                        Console.WriteLine("Calification added");
-                        Console.WriteLine("");
-
+                        if (command == 10)
+                        {
+                            Console.WriteLine("");
+                            Console.WriteLine("Calification added");
+                            Console.WriteLine("");
+                        }
                     }
+                }
+                catch (Exception e)
+                {
+
                 }
             }
         }
@@ -210,6 +223,20 @@ namespace Client
             }
         }
 
+        private static void HandleDisconnect()
+        {
+            try
+            {
+                Protocol.Send(clientSocket, "REQ", 6);
+                Console.WriteLine("Disconnected");
+                Environment.Exit(0);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+
         private static void HandleMenu()
         {
             try
@@ -225,6 +252,9 @@ namespace Client
                         break;
                     case 4:
                         HandleCalifications();
+                        break;
+                    case 5:
+                        HandleDisconnect();
                         break;
                     default:
                         Console.WriteLine("hola");

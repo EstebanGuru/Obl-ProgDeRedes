@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 
 namespace Server
 {
@@ -34,19 +35,26 @@ namespace Server
         {
             while (true)
             {
-                string messageType = Protocol.ReceiveHeader(ClientSocket);
-                int command = Protocol.ReceiveCommand(ClientSocket);
-                if (messageType.Equals("REQ"))
+                try
                 {
-                    HandleRequest(command);
+                    string messageType = Protocol.ReceiveHeader(ClientSocket);
+                    int command = Protocol.ReceiveCommand(ClientSocket);
+                    if (messageType.Equals("REQ"))
+                    {
+                        HandleRequest(command);
+                    }
+                    else if (messageType.Equals("RES"))
+                    {
+                        HandleResponse(command);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Something went wrong");
+                    }
                 }
-                else if (messageType.Equals("RES"))
+                catch (Exception e)
                 {
-                    HandleResponse(command);
-                }
-                else
-                {
-                    Console.WriteLine("Something went wrong");
+                    return;
                 }
             }
         }
@@ -71,6 +79,9 @@ namespace Server
                     break;
                 case 5:
                     HandleCalifications();
+                    break;
+                case 6:
+                    HandleDisconnect();
                     break;
                 default:
                     break;
@@ -156,6 +167,14 @@ namespace Server
                 strResponse = "No califications available";
             }
             Protocol.Send(ClientSocket, "RES", 80, String.Join("#", strResponse));
+        }
+
+        private void HandleDisconnect()
+        {
+            ClientSocket.Shutdown(SocketShutdown.Both);
+            NotificationSocket.Shutdown(SocketShutdown.Both);
+            ClientSocket.Disconnect(true);
+            NotificationSocket.Disconnect(true);
         }
 
     }

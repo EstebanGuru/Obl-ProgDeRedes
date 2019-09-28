@@ -50,7 +50,6 @@ namespace Server
 
         private static void ClientHandler(Socket clientSocket, Socket notificationSocket)
         {
-            Console.WriteLine("Client connected!");
             ClientMenuHandler clientHandler = new ClientMenuHandler(clientSocket, serverSocket, notificationSocket, studentLogic, courseLogic, ref clients);
             clientHandler.Run();
         }
