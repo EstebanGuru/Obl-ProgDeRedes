@@ -8,14 +8,14 @@ namespace ProtocolLibrary
     {
         public Protocol() { }
 
-        public string RecieveHeader(Socket socket)
+        public string ReceiveHeader(Socket socket)
         {
             var headerMessagge = new byte[3];
             socket.Receive(headerMessagge);
             return Encoding.ASCII.GetString(headerMessagge);
         }
 
-        public int RecieveCommand(Socket socket)
+        public int ReceiveCommand(Socket socket)
         {
 
             var commandInBytes = new byte[2];
@@ -59,7 +59,7 @@ namespace ProtocolLibrary
             socket.Send(commandInBytes);
 
             // Send data
-            if (data != null)
+            if (data != null && data != "")
             {
                 var lenthOfData = data.Length;
                 SendLenght(lenthOfData, socket);

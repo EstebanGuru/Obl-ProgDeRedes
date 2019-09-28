@@ -38,6 +38,7 @@ namespace Server.BusinessLogic
         public CourseLogic()
         {
             Courses = new List<Course>();
+            Inscriptions = new List<StudentCourse>();
         }
         public void AddCourse(int courseId, string courseName)
         {
@@ -70,7 +71,7 @@ namespace Server.BusinessLogic
 
         public void AddStudent(int studentId, string courseName)
         {
-            if (Courses.ToList().Find(course => course.Name == courseName) == null)
+            if (!Courses.ToList().Exists(course => course.Name == courseName))
             {
                 throw new InvalidCourseName();
             }
@@ -112,7 +113,7 @@ namespace Server.BusinessLogic
             }
         }
 
-        public IList<InscriptionCalification> GetCalifications(int studentId)
+        public IList<InscriptionCalification> ListCalifications(int studentId)
         {
             IList<InscriptionCalification> ret = new List<InscriptionCalification>();
             List<StudentCourse> inscriptions = Inscriptions.Where(i => i.StudentId == studentId).ToList();

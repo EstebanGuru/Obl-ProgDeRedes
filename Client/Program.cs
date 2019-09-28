@@ -42,13 +42,9 @@ namespace Client
             try
             {
                 Protocol.Send(clientSocket, "REQ", 1, credentials);
-                string header = Protocol.RecieveHeader(clientSocket);
-                int command = Protocol.RecieveCommand(clientSocket);
-                if (header.Equals("REQ"))
-                {
-
-                }
-                else if (header.Equals("RES"))
+                string header = Protocol.ReceiveHeader(clientSocket);
+                int command = Protocol.ReceiveCommand(clientSocket);
+                if (header.Equals("RES"))
                 {
                     if (command == 80)
                     {
@@ -56,7 +52,7 @@ namespace Client
                     }
                     if (command == 99)
                     {
-                        string mesage = Protocol.ReceiveString(clientSocket);
+                        string mesage = Protocol.ReceiveData(clientSocket);
                         Console.WriteLine("serivdor responde {0}", mesage);
                     }
                 }
@@ -65,7 +61,6 @@ namespace Client
             {
                 Console.WriteLine(e.Message);
             }
-
         }
 
         private static void ShowMenu()
@@ -79,13 +74,114 @@ namespace Client
                     Console.WriteLine("3- Upload");
                     Console.WriteLine("4- Display results");
                     Console.WriteLine("5- Disconnect");
-                    Console.ReadLine();
                     HandleMenu();
                 }
                 else
                 {
                     Login();
                 }
+            }
+        }
+
+        private static void HandleInscription()
+        {
+            Console.WriteLine("");
+            Console.WriteLine("Inscription");
+            Console.Write("Course name: ");
+            string courseName = Console.ReadLine();
+            string data = string.Join("#", studentNumber, courseName);
+            try
+            {
+                Protocol.Send(clientSocket, "REQ", 2, data);
+                string header = Protocol.ReceiveHeader(clientSocket);
+                int command = Protocol.ReceiveCommand(clientSocket);
+                if (header.Equals("RES"))
+                {
+                    if (command == 80)
+                    {
+                        Console.WriteLine("Inscription created successfully.");
+                    }
+                    if (command == 99)
+                    {
+                        string mesage = Protocol.ReceiveData(clientSocket);
+                        Console.WriteLine("serivdor responde {0}", mesage);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+
+        private static void HandleAvailableCourses()
+        {
+            Console.WriteLine("");
+            Console.WriteLine("Courses:");
+            string data = studentNumber.ToString();
+            try
+            {
+                Protocol.Send(clientSocket, "REQ", 3, data);
+                string header = Protocol.ReceiveHeader(clientSocket);
+                int command = Protocol.ReceiveCommand(clientSocket);
+                if (header.Equals("RES"))
+                {
+                    if (command == 80)
+                    {
+                        string response = Protocol.ReceiveData(clientSocket);
+                        var courses = response.Split('#');
+                        foreach (var course in courses)
+                        {
+                            Console.WriteLine(course);
+                        }
+                        Console.WriteLine("");
+                    }
+                    if (command == 99)
+                    {
+                        string mesage = Protocol.ReceiveData(clientSocket);
+                        Console.WriteLine("serivdor responde {0}", mesage);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+
+        }
+
+        private static void HandleCalifications()
+        {
+            Console.WriteLine("");
+            Console.WriteLine("Califications");
+            string data = studentNumber.ToString();
+            try
+            {
+                Protocol.Send(clientSocket, "REQ", 5, data);
+                string header = Protocol.ReceiveHeader(clientSocket);
+                int command = Protocol.ReceiveCommand(clientSocket);
+                if (header.Equals("RES"))
+                {
+                    if (command == 80)
+                    {
+                        string response = Protocol.ReceiveData(clientSocket);
+                        var califications = response.Split('#');
+                        foreach (var calification in califications)
+                        {
+                            Console.WriteLine(calification);
+                        }
+                        Console.WriteLine("");
+                    }
+                    if (command == 99)
+                    {
+                        string mesage = Protocol.ReceiveData(clientSocket);
+                        Console.WriteLine("serivdor responde {0}", mesage);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
             }
         }
 
@@ -97,7 +193,13 @@ namespace Client
                 switch (option)
                 {
                     case 1:
-                        Console.WriteLine("hola");
+                        HandleInscription();
+                        break;
+                    case 2:
+                        HandleAvailableCourses();
+                        break;
+                    case 4:
+                        HandleCalifications();
                         break;
                     default:
                         Console.WriteLine("hola");

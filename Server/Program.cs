@@ -47,7 +47,7 @@ namespace Server
         private static void ClientHandler(Socket clientSocket)
         {
             Console.WriteLine("Client connected!");
-            ClientMenuHandler clientHandler = new ClientMenuHandler(clientSocket, serverSocket, studentLogic);
+            ClientMenuHandler clientHandler = new ClientMenuHandler(clientSocket, serverSocket, studentLogic, courseLogic);
             clientHandler.Run();
         }
 
