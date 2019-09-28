@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 
 namespace Server
 {
@@ -13,32 +14,48 @@ namespace Server
     {
         private Socket ClientSocket;
         private Socket ServerSocket;
+        private Socket NotificationSocket;
         private Protocol Protocol;
         private StudentLogic studentLogic;
+        private CourseLogic courseLogic;
+        private List<Utils.StudentSocket> clients;
 
-        public ClientMenuHandler(Socket clientSocket, Socket serverSocket, StudentLogic studentLogicHandler)
+        public ClientMenuHandler(Socket clientSocket, Socket serverSocket, Socket notificationSocket, StudentLogic studentLogicHandler, CourseLogic courseLogicHandler, ref List<Utils.StudentSocket> pClients)
         {
             Protocol = new Protocol();
             ClientSocket = clientSocket;
             ServerSocket = serverSocket;
+            NotificationSocket = notificationSocket;
             studentLogic = studentLogicHandler;
+            courseLogic = courseLogicHandler;
+            clients = pClients;
         }
 
         public void Run()
         {
-            string messageType = Protocol.RecieveHeader(ClientSocket);
-            int command = Protocol.RecieveCommand(ClientSocket);
-            if (messageType.Equals("REQ"))
+            while (true)
             {
-                HandleRequest(command);
-            }
-            else if (messageType.Equals("RES"))
-            {
-                HandleResponse(command);
-            }
-            else
-            {
-                Console.WriteLine("Something went wrong");
+                try
+                {
+                    string messageType = Protocol.ReceiveHeader(ClientSocket);
+                    int command = Protocol.ReceiveCommand(ClientSocket);
+                    if (messageType.Equals("REQ"))
+                    {
+                        HandleRequest(command);
+                    }
+                    else if (messageType.Equals("RES"))
+                    {
+                        HandleResponse(command);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Something went wrong");
+                    }
+                }
+                catch (Exception e)
+                {
+                    return;
+                }
             }
         }
 
@@ -54,6 +71,18 @@ namespace Server
                 case 1:
                     HandleLogin();
                     break;
+                case 2:
+                    HandleInscription();
+                    break;
+                case 3:
+                    HandleAvailableCourses();
+                    break;
+                case 5:
+                    HandleCalifications();
+                    break;
+                case 6:
+                    HandleDisconnect();
+                    break;
                 default:
                     break;
             }
@@ -61,44 +90,92 @@ namespace Server
 
         private void HandleLogin()
         {
-            string stringId = ReceiveString();
-            int id = int.Parse(stringId);
-            string password = ReceiveString();
+            string credentials = Protocol.ReceiveData(ClientSocket);
+            var arrayCredentials = credentials.Split('#');
+            int id = Int32.Parse(arrayCredentials[0]);
+            string password = arrayCredentials[1];
             try
             {
-                studentLogic.ValidateId(id);
+                studentLogic.ValidateCredentials(id, password);
+                Protocol.Send(ClientSocket, "RES", 80);
+                clients.Add(new Utils.StudentSocket(id, NotificationSocket));
             }
             catch (StudentException e)
             {
-                HandleLoginError(e.Message);
+                Protocol.Send(ClientSocket, "RES", 99, e.Message);
             }
         }
 
-        private void HandleLoginError(string message)
+        private void HandleInscription()
         {
-            Protocol.SendResponse(ClientSocket);
-            Protocol.SendCommand(ClientSocket, "99");
-            SendString(message);
+            string data = Protocol.ReceiveData(ClientSocket);
+            var arrayData = data.Split('#');
+            int studentId = Int32.Parse(arrayData[0]);
+            string courseName = arrayData[1];
+            try
+            {
+                courseLogic.AddStudent(studentId, courseName);
+                Protocol.Send(ClientSocket, "RES", 80);
+            }
+            catch (StudentException e)
+            {
+                Protocol.Send(ClientSocket, "RES", 99, e.Message);
+            }
+            catch (CourseException e)
+            {
+                Protocol.Send(ClientSocket, "RES", 99, e.Message);
+            }
         }
 
-        private void SendString(string data)
+        private void HandleAvailableCourses()
         {
-            var lenthOfData = data.Length;
-            Protocol.SendLenght(lenthOfData, ClientSocket);
-            byte[] dataInBytes = new byte[lenthOfData];
-            dataInBytes = Encoding.ASCII.GetBytes(data);
-            Protocol.SendData(dataInBytes, ClientSocket);
+            string data = Protocol.ReceiveData(ClientSocket);
+            int studentId = Int32.Parse(data);
+
+            IList<InscriptionDetail> courses = courseLogic.ListCourses(studentId);
+            string[] response = new string[courses.Count];
+            int index = 0;
+            foreach (var course in courses)
+            {
+                response[index] = course.CourseName + " - " + course.Status;
+                index++;
+            }
+            string strResponse = String.Join("#", response);
+            if (strResponse == "")
+            {
+                strResponse = "No courses available";
+            }
+            Protocol.Send(ClientSocket, "RES", 80, String.Join("#", strResponse));
         }
 
-        private string ReceiveString( )
+        private void HandleCalifications()
         {
-            var dataLength = Protocol.ReceiveLenght(ClientSocket);
-            var dataInBytes = new byte[dataLength];
-            ClientSocket.Receive(dataInBytes);
-            return Encoding.ASCII.GetString(dataInBytes);
+            string data = Protocol.ReceiveData(ClientSocket);
+            int studentId = Int32.Parse(data);
+
+            IList<InscriptionCalification> califications = courseLogic.ListCalifications(studentId);
+            string[] response = new string[califications.Count];
+            int index = 0;
+            foreach (var calification in califications)
+            {
+                response[index] = calification.CourseName + " - " + calification.Calification;
+                index++;
+            }
+            string strResponse = String.Join("#", response);
+            if (strResponse == "")
+            {
+                strResponse = "No califications available";
+            }
+            Protocol.Send(ClientSocket, "RES", 80, String.Join("#", strResponse));
         }
 
-   
+        private void HandleDisconnect()
+        {
+            ClientSocket.Shutdown(SocketShutdown.Both);
+            NotificationSocket.Shutdown(SocketShutdown.Both);
+            ClientSocket.Disconnect(true);
+            NotificationSocket.Disconnect(true);
+        }
 
     }
 }

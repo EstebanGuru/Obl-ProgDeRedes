@@ -8,14 +8,14 @@ namespace ProtocolLibrary
     {
         public Protocol() { }
 
-        public string RecieveHeader(Socket socket)
+        public string ReceiveHeader(Socket socket)
         {
             var headerMessagge = new byte[3];
             socket.Receive(headerMessagge);
             return Encoding.ASCII.GetString(headerMessagge);
         }
 
-        public int RecieveCommand(Socket socket)
+        public int ReceiveCommand(Socket socket)
         {
 
             var commandInBytes = new byte[2];
@@ -46,6 +46,35 @@ namespace ProtocolLibrary
         {
             var messagge = Encoding.ASCII.GetBytes(command);
             socket.Send(messagge);
+        }
+
+        public void Send (Socket socket, string header, int command, string data = null)
+        {
+            // Send header
+            var headerInBytes = Encoding.ASCII.GetBytes(header);
+            socket.Send(headerInBytes);
+
+            // Send command
+            var commandInBytes = Encoding.ASCII.GetBytes(command.ToString());
+            socket.Send(commandInBytes);
+
+            // Send data
+            if (data != null && data != "")
+            {
+                var lenthOfData = data.Length;
+                SendLenght(lenthOfData, socket);
+                byte[] dataInBytes = new byte[lenthOfData];
+                dataInBytes = Encoding.ASCII.GetBytes(data);
+                SendData(dataInBytes, socket);
+            }
+        }
+
+        public string ReceiveData(Socket socket)
+        {
+            var dataLength = ReceiveLenght(socket);
+            var dataInBytes = new byte[dataLength];
+            socket.Receive(dataInBytes);
+            return Encoding.ASCII.GetString(dataInBytes);
         }
 
         public string ReceiveString(Socket socket)

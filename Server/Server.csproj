@@ -45,6 +45,7 @@
     <Compile Include="BusinessLogic.Exceptions\InvalidCourseId.cs" />
     <Compile Include="BusinessLogic.Exceptions\InvalidCourseName.cs" />
     <Compile Include="BusinessLogic.Exceptions\InvalidEmail.cs" />
+    <Compile Include="BusinessLogic.Exceptions\InvalidCredentials.cs" />
     <Compile Include="BusinessLogic.Exceptions\InvalidStudentEmail.cs" />
     <Compile Include="BusinessLogic.Exceptions\InvalidStudentId.cs" />
     <Compile Include="BusinessLogic.Exceptions\StudentException.cs" />
