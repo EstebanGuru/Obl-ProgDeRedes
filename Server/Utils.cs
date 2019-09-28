@@ -1,5 +1,6 @@
 ﻿using Server.BusinessLogic.Exceptions;
 using System;
+using System.Net.Sockets;
 using System.Text.RegularExpressions;
 
 
@@ -15,6 +16,16 @@ namespace Server
                 return email;
             }
             throw new InvalidEmail();
+        }
+        public struct StudentSocket
+        {
+            public int StudentId;
+            public Socket ClientSocket;
+            public StudentSocket(int studentId, Socket clientSocket)
+            {
+                StudentId = studentId;
+                ClientSocket = clientSocket;
+            }
         }
     }
 }

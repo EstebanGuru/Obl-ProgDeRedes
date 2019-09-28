@@ -6,21 +6,25 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using ProtocolLibrary;
+using System.Collections.Generic;
 
 namespace Server
 {
     class Program
     {
+
         static StudentLogic studentLogic;
         static CourseLogic courseLogic;
         static Socket serverSocket;
         static Protocol Protocol;
+        static List<Utils.StudentSocket> clients;
         static void Main(string[] args)
         {
             studentLogic = new StudentLogic();
             courseLogic = new CourseLogic();
-            Protocol Protocol = new Protocol();
+            Protocol = new Protocol();
             serverSocket = ConfigServer();
+            clients = new List<Utils.StudentSocket>();
             new Thread(() => ListenClients(serverSocket)).Start();
             new Thread(() => ShowMenu()).Start();
         }
@@ -36,18 +40,18 @@ namespace Server
 
         private static void ListenClients(Socket serverSocket)
         {
-            Console.WriteLine("Waiting for client to connect... ");
             while (true)
             {
                 var clientSocket = serverSocket.Accept();
-                new Thread(() => ClientHandler(clientSocket)).Start();
+                var notificationSocket = serverSocket.Accept();
+                new Thread(() => ClientHandler(clientSocket, notificationSocket)).Start();
             }
         }
 
-        private static void ClientHandler(Socket clientSocket)
+        private static void ClientHandler(Socket clientSocket, Socket notificationSocket)
         {
             Console.WriteLine("Client connected!");
-            ClientMenuHandler clientHandler = new ClientMenuHandler(clientSocket, serverSocket, studentLogic, courseLogic);
+            ClientMenuHandler clientHandler = new ClientMenuHandler(clientSocket, serverSocket, notificationSocket, studentLogic, courseLogic, ref clients);
             clientHandler.Run();
         }
 
@@ -145,10 +149,12 @@ namespace Server
                 Console.WriteLine("Course name: ");
                 string courseName = Console.ReadLine();
                 Console.WriteLine("Student id: ");
-                int studenId = int.Parse(Console.ReadLine());
+                int studentId = int.Parse(Console.ReadLine());
                 Console.WriteLine("Calification: ");
                 int calification = int.Parse(Console.ReadLine());
-                courseLogic.AddCalification(courseName, studenId, calification);
+                courseLogic.AddCalification(courseName, studentId, calification);
+                Utils.StudentSocket clientSocket = clients.Find(studentSocket => studentSocket.StudentId == studentId);
+                Protocol.Send(clientSocket.ClientSocket, "RES", 10);
                 Console.WriteLine("Calification added correctly");
             }
             catch (CourseException e)

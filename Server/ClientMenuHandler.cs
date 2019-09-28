@@ -13,17 +13,21 @@ namespace Server
     {
         private Socket ClientSocket;
         private Socket ServerSocket;
+        private Socket NotificationSocket;
         private Protocol Protocol;
         private StudentLogic studentLogic;
         private CourseLogic courseLogic;
+        private List<Utils.StudentSocket> clients;
 
-        public ClientMenuHandler(Socket clientSocket, Socket serverSocket, StudentLogic studentLogicHandler, CourseLogic courseLogicHandler)
+        public ClientMenuHandler(Socket clientSocket, Socket serverSocket, Socket notificationSocket, StudentLogic studentLogicHandler, CourseLogic courseLogicHandler, ref List<Utils.StudentSocket> pClients)
         {
             Protocol = new Protocol();
             ClientSocket = clientSocket;
             ServerSocket = serverSocket;
+            NotificationSocket = notificationSocket;
             studentLogic = studentLogicHandler;
             courseLogic = courseLogicHandler;
+            clients = pClients;
         }
 
         public void Run()
@@ -83,6 +87,7 @@ namespace Server
             {
                 studentLogic.ValidateCredentials(id, password);
                 Protocol.Send(ClientSocket, "RES", 80);
+                clients.Add(new Utils.StudentSocket(id, NotificationSocket));
             }
             catch (StudentException e)
             {
