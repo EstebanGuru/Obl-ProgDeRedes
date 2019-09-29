@@ -13,11 +13,10 @@ namespace ClientController
         private int StudentNumber;
 
 
-        public ClientMenuController(Socket clientSocket, Socket notificationSocket, int studentNumber)
+        public ClientMenuController(Socket clientSocket, int studentNumber)
         {
             Protocol = new Protocol();
             ClientSocket = clientSocket;
-            NotificationSocket = notificationSocket;
             StudentNumber = studentNumber;
         }
 
@@ -66,7 +65,8 @@ namespace ClientController
         {
             try
             {
-                int option = Int32.Parse(Console.ReadLine());
+                string strOption = Console.ReadLine();
+                int option = Int32.Parse(strOption);
                 switch (option)
                 {
                     case 1:
@@ -129,9 +129,9 @@ namespace ClientController
         {
             Console.WriteLine("");
             Console.WriteLine("Califications");
-            string data = StudentNumber.ToString();
             try
             {
+                string data = StudentNumber.ToString();
                 Protocol.Send(ClientSocket, "REQ", CommandUtils.CALIFICATIONS, data);
                 HandleCommunication();
             }
