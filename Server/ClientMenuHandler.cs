@@ -20,11 +20,10 @@ namespace Server
         private CourseLogic courseLogic;
         private List<Utils.StudentSocket> clients;
 
-        public ClientMenuHandler(Socket clientSocket, Socket serverSocket, Socket notificationSocket, StudentLogic studentLogicHandler, CourseLogic courseLogicHandler, ref List<Utils.StudentSocket> pClients)
+        public ClientMenuHandler(Socket clientSocket, Socket notificationSocket, StudentLogic studentLogicHandler, CourseLogic courseLogicHandler, ref List<Utils.StudentSocket> pClients)
         {
             Protocol = new Protocol();
             ClientSocket = clientSocket;
-            ServerSocket = serverSocket;
             NotificationSocket = notificationSocket;
             studentLogic = studentLogicHandler;
             courseLogic = courseLogicHandler;
@@ -68,19 +67,19 @@ namespace Server
         {
             switch (command)
             {
-                case 1:
+                case CommandUtils.LOGIN:
                     HandleLogin();
                     break;
-                case 2:
+                case CommandUtils.INSCRIPTION:
                     HandleInscription();
                     break;
-                case 3:
+                case CommandUtils.AVAILABLE_COURSES:
                     HandleAvailableCourses();
                     break;
-                case 5:
+                case CommandUtils.CALIFICATIONS:
                     HandleCalifications();
                     break;
-                case 6:
+                case CommandUtils.DISCONNECT:
                     HandleDisconnect();
                     break;
                 default:
@@ -97,12 +96,12 @@ namespace Server
             try
             {
                 studentLogic.ValidateCredentials(id, password);
-                Protocol.Send(ClientSocket, "RES", 80);
+                Protocol.Send(ClientSocket, "RES", CommandUtils.LOGIN_RESPONSE, string.Join("#", id));
                 clients.Add(new Utils.StudentSocket(id, NotificationSocket));
             }
             catch (StudentException e)
             {
-                Protocol.Send(ClientSocket, "RES", 99, e.Message);
+                Protocol.Send(ClientSocket, "RES", CommandUtils.ERROR, e.Message);
             }
         }
 
@@ -115,15 +114,15 @@ namespace Server
             try
             {
                 courseLogic.AddStudent(studentId, courseName);
-                Protocol.Send(ClientSocket, "RES", 80);
+                Protocol.Send(ClientSocket, "RES", CommandUtils.SUCCESS_MESSAGE, "Inscription created successfully.");
             }
             catch (StudentException e)
             {
-                Protocol.Send(ClientSocket, "RES", 99, e.Message);
+                Protocol.Send(ClientSocket, "RES", CommandUtils.ERROR, e.Message);
             }
             catch (CourseException e)
             {
-                Protocol.Send(ClientSocket, "RES", 99, e.Message);
+                Protocol.Send(ClientSocket, "RES", CommandUtils.ERROR, e.Message);
             }
         }
 
@@ -145,7 +144,7 @@ namespace Server
             {
                 strResponse = "No courses available";
             }
-            Protocol.Send(ClientSocket, "RES", 80, String.Join("#", strResponse));
+            Protocol.Send(ClientSocket, "RES", CommandUtils.SPLITTED_RESPONSE, String.Join("#", strResponse));
         }
 
         private void HandleCalifications()
@@ -166,7 +165,7 @@ namespace Server
             {
                 strResponse = "No califications available";
             }
-            Protocol.Send(ClientSocket, "RES", 80, String.Join("#", strResponse));
+            Protocol.Send(ClientSocket, "RES", CommandUtils.SPLITTED_RESPONSE, String.Join("#", strResponse));
         }
 
         private void HandleDisconnect()
