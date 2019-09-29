@@ -42,15 +42,21 @@ namespace Server.BusinessLogic
         }
         public void AddCourse(int courseId, string courseName)
         {
-            ValidateId(courseId);
-            ValidateName(courseName);
-            Course course = new Course(courseId, courseName);
-            Courses.Add(course);
+            lock (Courses)
+            {
+                ValidateId(courseId);
+                ValidateName(courseName);
+                Course course = new Course(courseId, courseName);
+                Courses.Add(course);
+            }
         }
 
         public void DeleteCourse(string courseName)
         {
-            Courses = Courses.Where(course => course.Name != courseName).ToList();
+            lock (Courses)
+            {
+                Courses = Courses.Where(course => course.Name != courseName).ToList();
+            }
         }
 
         private void ValidateId(int courseId)
@@ -71,61 +77,84 @@ namespace Server.BusinessLogic
 
         public void AddStudent(int studentId, string courseName)
         {
-            if (!Courses.ToList().Exists(course => course.Name == courseName))
+            lock (Courses)
             {
-                throw new InvalidCourseName();
+                lock (Inscriptions)
+                {
+                    if (!Courses.ToList().Exists(course => course.Name == courseName))
+                    {
+                        throw new CourseException("Course name does not exists");
+                    }
+                    if (studentLogic.GetStudent(studentId) == null)
+                    {
+                        throw new StudentException("Student id does not exists");
+                    }
+                    if (Inscriptions.Exists(i => i.CourseName == courseName && i.StudentId == studentId))
+                    {
+                        throw new CourseException("Student is already enrolled in this course");
+                    }
+                    StudentCourse newInscription = new StudentCourse(studentId, courseName);
+                    Inscriptions.Add(newInscription);
+                }
             }
-            if (studentLogic.GetStudent(studentId) == null)
-            {
-                throw new InvalidStudentId();
-            }
-            StudentCourse newInscription = new StudentCourse(studentId, courseName);
-            Inscriptions.Add(newInscription);
         }
 
         public IList<InscriptionDetail> ListCourses(int studentId)
         {
             IList<InscriptionDetail> ret = new List<InscriptionDetail>();
-            foreach (var course in Courses)
+            lock (Courses)
             {
-                string courseName = course.Name;
-                string status = "No anotado";
-                StudentCourse inscription = Inscriptions.Find(i => i.CourseName == courseName && i.StudentId == studentId);
-                if (inscription != null)
+                lock (Inscriptions)
                 {
-                    status = "Anotado";
-                    if (inscription.Calification != -1)
+                    foreach (var course in Courses)
                     {
-                        status = "Con nota asociada";
+                        string courseName = course.Name;
+                        string status = "No anotado";
+                        StudentCourse inscription = Inscriptions.Find(i => i.CourseName == courseName && i.StudentId == studentId);
+                        if (inscription != null)
+                        {
+                            status = "Anotado";
+                            if (inscription.Calification != -1)
+                            {
+                                status = "Con nota asociada";
+                            }
+                        }
+                        ret.Add(new InscriptionDetail(courseName, status));
                     }
+                    return ret;
                 }
-                ret.Add(new InscriptionDetail(courseName, status));
             }
-            return ret;
+
         }
 
         public void AddCalification(string courseName, int studentId, int calification)
         {
-            StudentCourse inscription = Inscriptions.Find(i => i.CourseName == courseName && i.StudentId == studentId);
-            if (inscription == null)
+            lock (Inscriptions)
             {
-                throw new CourseException("Student it's not incripted on the course");
+                StudentCourse inscription = Inscriptions.Find(i => i.CourseName == courseName && i.StudentId == studentId);
+                if (inscription == null)
+                {
+                    throw new CourseException("Student it's not enrolled in the course");
+                }
+                inscription.AddCalification(calification);
             }
-            inscription.AddCalification(calification);
         }
 
         public IList<InscriptionCalification> ListCalifications(int studentId)
         {
-            IList<InscriptionCalification> ret = new List<InscriptionCalification>();
-            List<StudentCourse> inscriptions = Inscriptions.Where(i => i.StudentId == studentId).ToList();
-            foreach (var inscription in inscriptions)
+            lock (Inscriptions)
             {
-                if (inscription.Calification != -1)
+                IList<InscriptionCalification> ret = new List<InscriptionCalification>();
+                List<StudentCourse> inscriptions = Inscriptions.Where(i => i.StudentId == studentId).ToList();
+                foreach (var inscription in inscriptions)
                 {
-                    ret.Add(new InscriptionCalification(inscription.CourseName, inscription.Calification));
+                    if (inscription.Calification != -1)
+                    {
+                        ret.Add(new InscriptionCalification(inscription.CourseName, inscription.Calification));
+                    }
                 }
+                return ret;
             }
-            return ret;
         }
     }
 }

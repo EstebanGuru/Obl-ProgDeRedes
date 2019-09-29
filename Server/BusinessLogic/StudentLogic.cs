@@ -14,10 +14,13 @@ namespace Server.BusinessLogic
 
         public void AddStudent(int studentId, string studentEmail)
         {
-            ValidateId(studentId);
-            ValidateEmail(studentEmail);
-            Student student = new Student(studentId, studentEmail);
-            Students.Add(student);
+            lock (Students)
+            {
+                ValidateId(studentId);
+                ValidateEmail(studentEmail);
+                Student student = new Student(studentId, studentEmail);
+                Students.Add(student);
+            }
         }
 
         public Student GetStudent(int studentId)
@@ -43,10 +46,13 @@ namespace Server.BusinessLogic
 
         public void ValidateCredentials(int studentId, string password)
         {
-            Student student =  Students.ToList().Find(s => s.Id == studentId && s.Password == password);
-            if (student == null)
+            lock (Students)
             {
-                throw new InvalidCredentials();
+                Student student =  Students.ToList().Find(s => s.Id == studentId && s.Password == password);
+                if (student == null)
+                {
+                    throw new InvalidCredentials();
+                }
             }
         }
     }
