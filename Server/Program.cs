@@ -32,7 +32,7 @@ namespace Server
         private static Socket ConfigServer()
         {
             var serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            var ipEndPoint = new IPEndPoint(IPAddress.Parse("192.168.0.101"), 6000);
+            var ipEndPoint = new IPEndPoint(IPAddress.Parse("192.168.1.44"), 6000);
             serverSocket.Bind(ipEndPoint);
             serverSocket.Listen(1000);
             return serverSocket;
@@ -50,7 +50,7 @@ namespace Server
 
         private static void ClientHandler(Socket clientSocket, Socket notificationSocket)
         {
-            ClientMenuHandler clientHandler = new ClientMenuHandler(clientSocket, serverSocket, notificationSocket, studentLogic, courseLogic, ref clients);
+            ClientMenuHandler clientHandler = new ClientMenuHandler(clientSocket, notificationSocket, studentLogic, courseLogic, ref clients);
             clientHandler.Run();
         }
 
@@ -65,6 +65,7 @@ namespace Server
                 Console.WriteLine("2- Create course");
                 Console.WriteLine("3- Delete course");
                 Console.WriteLine("4- Assign result to student");
+                Console.WriteLine("5- Show students connected");
                 Console.WriteLine("*******************************");
                 Console.WriteLine("*******************************");
                 MenuInterface();
@@ -89,11 +90,24 @@ namespace Server
                 case "4":
                     AddCalification();
                     break;
+                case "5":
+                    ShowConnectedStudents();
+                    break;
                 default:
                     break;
             }
 
         }
+
+        private static void ShowConnectedStudents()
+        {
+            foreach (var client in clients)
+            {
+                Console.WriteLine(client.StudentId);
+            }
+            Console.WriteLine("");
+        }
+
         private static void CreateStudent()
         {
             Console.WriteLine("*********  Create student  *********");
