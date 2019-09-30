@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Net.Sockets;
 using System.Text;
 using ProtocolLibrary;
@@ -29,7 +30,7 @@ namespace ClientController
                 {
                     Console.WriteLine("1- Inscription");
                     Console.WriteLine("2- Available courses");
-                    Console.WriteLine("3- Upload");
+                    Console.WriteLine("3- Upload file to course");
                     Console.WriteLine("4- Display results");
                     Console.WriteLine("5- Disconnect");
                     HandleMenu();
@@ -52,7 +53,7 @@ namespace ClientController
             string credentials = string.Join("#", pStudentNumber, password);
             try
             {
-                Protocol.Send(ClientSocket, "REQ", CommandUtils.LOGIN, credentials);
+                Protocol.Send(ClientSocket, "REQ", CommandUtils.LOGIN, Encoding.ASCII.GetBytes(credentials));
                 HandleCommunication();
             }
             catch (Exception e)
@@ -74,6 +75,9 @@ namespace ClientController
                         break;
                     case 2:
                         HandleAvailableCourses();
+                        break;
+                    case 3:
+                        UploadFilePreparation();
                         break;
                     case 4:
                         HandleCalifications();
@@ -100,7 +104,7 @@ namespace ClientController
             string data = string.Join("#", StudentNumber, courseName);
             try
             {
-                Protocol.Send(ClientSocket, "REQ", CommandUtils.INSCRIPTION, data);
+                Protocol.Send(ClientSocket, "REQ", CommandUtils.INSCRIPTION, Encoding.ASCII.GetBytes(data));
                 HandleCommunication();
             }
             catch (Exception e)
@@ -116,14 +120,33 @@ namespace ClientController
             string data = StudentNumber.ToString();
             try
             {
-                Protocol.Send(ClientSocket, "REQ", CommandUtils.AVAILABLE_COURSES, data);
+                Protocol.Send(ClientSocket, "REQ", CommandUtils.AVAILABLE_COURSES, Encoding.ASCII.GetBytes(data));
                 HandleCommunication();
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
             }
+        }
 
+        private void UploadFilePreparation()
+        {
+            try
+            {
+                Console.WriteLine("");
+                Console.Write("Course id: ");
+                string courseId = Console.ReadLine();
+                Console.WriteLine("File name with extention: ");
+                string fileName = Console.ReadLine();
+                string fileInfo = string.Join("#", courseId, fileName);
+                Protocol.Send(ClientSocket, "REQ", CommandUtils.SEND_FILE_REQUEST, Encoding.ASCII.GetBytes(fileInfo));
+                HandleCommunication();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error sending file");
+                Console.WriteLine(e.Message);
+            }
         }
         private void HandleCalifications()
         {
@@ -131,8 +154,7 @@ namespace ClientController
             Console.WriteLine("Califications");
             try
             {
-                string data = StudentNumber.ToString();
-                Protocol.Send(ClientSocket, "REQ", CommandUtils.CALIFICATIONS, data);
+                Protocol.Send(ClientSocket, "REQ", CommandUtils.CALIFICATIONS, Encoding.ASCII.GetBytes(data));
                 HandleCommunication();
             }
             catch (Exception e)
@@ -170,7 +192,7 @@ namespace ClientController
         }
         private void HandleResponse(int command)
         {
-            string response = Protocol.ReceiveData(ClientSocket);
+            string response = Encoding.ASCII.GetString(Protocol.ReceiveData(ClientSocket)); ;
             switch (command)
             {
                 case CommandUtils.LOGIN_RESPONSE:
@@ -190,9 +212,22 @@ namespace ClientController
                 case CommandUtils.ERROR:
                     Console.WriteLine("Something went wrong: {0}", response);
                     break;
+                case CommandUtils.SEND_FILE_PROCEED:
+                    SendFile(response);
+                    break;
                 default:
                     break;
             }
+        }
+
+        private void SendFile(string fileName)
+        {
+            var fileStream = new FileStream(@fileName, FileMode.Open, FileAccess.Read);
+            var lenthOfData = (int)fileStream.Length;
+            byte[] dataInBytes = new byte[lenthOfData];
+            fileStream.Read(dataInBytes, 0, dataInBytes.Length);
+            Protocol.Send(ClientSocket, "REQ", CommandUtils.SEND_FILE, dataInBytes);
+            HandleCommunication();
         }
     }
 }

@@ -48,7 +48,7 @@ namespace ProtocolLibrary
             socket.Send(messagge);
         }
 
-        public void Send (Socket socket, string header, int command, string data = null)
+        public void Send(Socket socket, string header, int command, byte[] data = null)
         {
             // Send header
             var headerInBytes = Encoding.ASCII.GetBytes(header);
@@ -59,22 +59,42 @@ namespace ProtocolLibrary
             socket.Send(commandInBytes);
 
             // Send data
-            if (data != null && data != "")
+            if (data != null)
             {
                 var lenthOfData = data.Length;
                 SendLenght(lenthOfData, socket);
-                byte[] dataInBytes = new byte[lenthOfData];
-                dataInBytes = Encoding.ASCII.GetBytes(data);
-                SendData(dataInBytes, socket);
+                SendData(data, socket);
             }
         }
 
-        public string ReceiveData(Socket socket)
+        public byte[] ReceiveData(Socket socket)
         {
             var dataLength = ReceiveLenght(socket);
             var dataInBytes = new byte[dataLength];
-            socket.Receive(dataInBytes);
-            return Encoding.ASCII.GetString(dataInBytes);
+            if (dataLength > 1048576)
+            {
+                var actuallyReceive = 0;
+                var dataToReceive = 1048576;
+                while (actuallyReceive < dataLength)
+                {
+                    if (dataLength - actuallyReceive < 1048576)
+                    {
+                        dataToReceive = dataLength - actuallyReceive;
+                    }
+                    var receive = socket.Receive(
+                        dataInBytes, actuallyReceive, dataToReceive, SocketFlags.None);
+                    if (receive == 0)
+                    {
+                        Console.WriteLine("ERROR");
+                    }
+                    actuallyReceive += receive;
+                }
+            }
+            else
+            {
+                socket.Receive(dataInBytes);
+            }
+            return dataInBytes;
         }
 
         public string ReceiveString(Socket socket)
@@ -112,10 +132,15 @@ namespace ProtocolLibrary
         {
             var lenthOfData = dataInBytes.Length;
             var actuallySent = 0;
+            var dataToSent = 1048576;
             while (actuallySent < lenthOfData)
             {
+                if (lenthOfData - actuallySent < 1048576)
+                {
+                    dataToSent = lenthOfData - actuallySent;
+                }
                 var sent = socket.Send(
-                    dataInBytes, actuallySent, lenthOfData - actuallySent, SocketFlags.None);
+                    dataInBytes, actuallySent, dataToSent, SocketFlags.None);
                 if (sent == 0)
                 {
                     Console.WriteLine("ERROR");

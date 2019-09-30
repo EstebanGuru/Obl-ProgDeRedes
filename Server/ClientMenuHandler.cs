@@ -1,5 +1,6 @@
 ﻿using ProtocolLibrary;
 using Server.BusinessLogic;
+using System.IO;
 using Server.BusinessLogic.Exceptions;
 using System;
 using System.Collections.Generic;
@@ -82,6 +83,9 @@ namespace Server
                 case CommandUtils.DISCONNECT:
                     HandleDisconnect();
                     break;
+                case CommandUtils.SEND_FILE_REQUEST:
+                    HandleReceiveFile();
+                    break;
                 default:
                     break;
             }
@@ -89,46 +93,46 @@ namespace Server
 
         private void HandleLogin()
         {
-            string credentials = Protocol.ReceiveData(ClientSocket);
+            string credentials = Encoding.ASCII.GetString(Protocol.ReceiveData(ClientSocket));
             var arrayCredentials = credentials.Split('#');
             int id = Int32.Parse(arrayCredentials[0]);
             string password = arrayCredentials[1];
             try
             {
                 studentLogic.ValidateCredentials(id, password);
-                Protocol.Send(ClientSocket, "RES", CommandUtils.LOGIN_RESPONSE, string.Join("#", id));
+                Protocol.Send(ClientSocket, "RES", CommandUtils.LOGIN_RESPONSE, Encoding.ASCII.GetBytes(string.Join("#", id)));
                 clients.Add(new Utils.StudentSocket(id, NotificationSocket));
             }
             catch (StudentException e)
             {
-                Protocol.Send(ClientSocket, "RES", CommandUtils.ERROR, e.Message);
+                Protocol.Send(ClientSocket, "RES", CommandUtils.ERROR, Encoding.ASCII.GetBytes(e.Message));
             }
         }
 
         private void HandleInscription()
         {
-            string data = Protocol.ReceiveData(ClientSocket);
+            string data = Encoding.ASCII.GetString(Protocol.ReceiveData(ClientSocket));
             var arrayData = data.Split('#');
             int studentId = Int32.Parse(arrayData[0]);
             string courseName = arrayData[1];
             try
             {
                 courseLogic.AddStudent(studentId, courseName);
-                Protocol.Send(ClientSocket, "RES", CommandUtils.SUCCESS_MESSAGE, "Inscription created successfully.");
+                Protocol.Send(ClientSocket, "RES", CommandUtils.SUCCESS_MESSAGE, Encoding.ASCII.GetBytes("Inscription created successfully."));
             }
             catch (StudentException e)
             {
-                Protocol.Send(ClientSocket, "RES", CommandUtils.ERROR, e.Message);
+                Protocol.Send(ClientSocket, "RES", CommandUtils.ERROR, Encoding.ASCII.GetBytes(e.Message));
             }
             catch (CourseException e)
             {
-                Protocol.Send(ClientSocket, "RES", CommandUtils.ERROR, e.Message);
+                Protocol.Send(ClientSocket, "RES", CommandUtils.ERROR, Encoding.ASCII.GetBytes(e.Message));
             }
         }
 
         private void HandleAvailableCourses()
         {
-            string data = Protocol.ReceiveData(ClientSocket);
+            string data = Encoding.ASCII.GetString(Protocol.ReceiveData(ClientSocket));
             int studentId = Int32.Parse(data);
 
             IList<InscriptionDetail> courses = courseLogic.ListCourses(studentId);
@@ -144,12 +148,12 @@ namespace Server
             {
                 strResponse = "No courses available";
             }
-            Protocol.Send(ClientSocket, "RES", CommandUtils.SPLITTED_RESPONSE, String.Join("#", strResponse));
+            Protocol.Send(ClientSocket, "RES", CommandUtils.SPLITTED_RESPONSE, Encoding.ASCII.GetBytes(String.Join("#", strResponse)));
         }
 
         private void HandleCalifications()
         {
-            string data = Protocol.ReceiveData(ClientSocket);
+            string data = Encoding.ASCII.GetString(Protocol.ReceiveData(ClientSocket));
             int studentId = Int32.Parse(data);
 
             IList<InscriptionCalification> califications = courseLogic.ListCalifications(studentId);
@@ -165,7 +169,7 @@ namespace Server
             {
                 strResponse = "No califications available";
             }
-            Protocol.Send(ClientSocket, "RES", CommandUtils.SPLITTED_RESPONSE, String.Join("#", strResponse));
+            Protocol.Send(ClientSocket, "RES", CommandUtils.SPLITTED_RESPONSE, Encoding.ASCII.GetBytes(String.Join("#", strResponse)));
         }
 
         private void HandleDisconnect()
@@ -174,6 +178,48 @@ namespace Server
             NotificationSocket.Shutdown(SocketShutdown.Both);
             ClientSocket.Disconnect(true);
             NotificationSocket.Disconnect(true);
+        }
+
+        private void HandleReceiveFile()
+        {
+            try
+            {
+                string fileInfo = Encoding.ASCII.GetString(Protocol.ReceiveData(ClientSocket));
+                var arrayFileInfo = fileInfo.Split('#');
+                int courseId = Int32.Parse(arrayFileInfo[0]);
+                string fileName = arrayFileInfo[1];
+                if (courseLogic.Courses.ToList().Exists(course => course.Id == courseId))
+                {
+                    Protocol.Send(ClientSocket, "RES", CommandUtils.SEND_FILE_PROCEED, Encoding.ASCII.GetBytes(fileName));
+                    string messageType = Protocol.ReceiveHeader(ClientSocket);
+                    int command = Protocol.ReceiveCommand(ClientSocket);
+                    if (command == CommandUtils.SEND_FILE)
+                    {
+                        string filePath = courseId.ToString() + "/" + fileName;
+                        FileInfo file = new System.IO.FileInfo(filePath);
+                        file.Directory.Create(); // If the directory already exists, this method does nothing.
+
+                        byte[] data = Protocol.ReceiveData(ClientSocket);
+                        File.WriteAllBytes(file.FullName, data);
+                        Protocol.Send(ClientSocket, "RES", CommandUtils.SUCCESS_MESSAGE, Encoding.ASCII.GetBytes("File uploaded succesfully."));
+
+                    }
+                    else
+                    {
+                        Protocol.Send(ClientSocket, "RES", CommandUtils.ERROR, Encoding.ASCII.GetBytes("Something went wrong, try again"));
+                    }
+                }
+                else
+                {
+                    Protocol.Send(ClientSocket, "RES", CommandUtils.ERROR, Encoding.ASCII.GetBytes("Course doesn't exist."));
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Something went wrong: {0}", e.Message);
+                throw;
+            }
+
         }
 
     }
