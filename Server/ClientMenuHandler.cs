@@ -8,18 +8,19 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using Server.Domain;
 
 namespace Server
 {
     public class ClientMenuHandler
     {
         private Socket ClientSocket;
-        private Socket ServerSocket;
         private Socket NotificationSocket;
         private Protocol Protocol;
         private StudentLogic studentLogic;
         private CourseLogic courseLogic;
         private List<Utils.StudentSocket> clients;
+        private int studentId;
 
         public ClientMenuHandler(Socket clientSocket, Socket notificationSocket, StudentLogic studentLogicHandler, CourseLogic courseLogicHandler, ref List<Utils.StudentSocket> pClients)
         {
@@ -95,13 +96,13 @@ namespace Server
         {
             string credentials = Encoding.ASCII.GetString(Protocol.ReceiveData(ClientSocket));
             var arrayCredentials = credentials.Split('#');
-            int id = Int32.Parse(arrayCredentials[0]);
+            studentId = Int32.Parse(arrayCredentials[0]);
             string password = arrayCredentials[1];
             try
             {
-                studentLogic.ValidateCredentials(id, password);
-                Protocol.Send(ClientSocket, "RES", CommandUtils.LOGIN_RESPONSE, Encoding.ASCII.GetBytes(string.Join("#", id)));
-                clients.Add(new Utils.StudentSocket(id, NotificationSocket));
+                studentLogic.ValidateCredentials(studentId, password);
+                Protocol.Send(ClientSocket, "RES", CommandUtils.LOGIN_RESPONSE, Encoding.ASCII.GetBytes(string.Join("#", studentId)));
+                clients.Add(new Utils.StudentSocket(studentId, NotificationSocket));
             }
             catch (StudentException e)
             {
@@ -186,17 +187,18 @@ namespace Server
             {
                 string fileInfo = Encoding.ASCII.GetString(Protocol.ReceiveData(ClientSocket));
                 var arrayFileInfo = fileInfo.Split('#');
-                int courseId = Int32.Parse(arrayFileInfo[0]);
+                string courseName = arrayFileInfo[0];
                 string fileName = arrayFileInfo[1];
-                if (courseLogic.Courses.ToList().Exists(course => course.Id == courseId))
+                StudentCourse inscription = courseLogic.Inscriptions.Find(i => i.CourseName == courseName && i.StudentId == studentId);
+                if (inscription != null)
                 {
                     Protocol.Send(ClientSocket, "RES", CommandUtils.SEND_FILE_PROCEED, Encoding.ASCII.GetBytes(fileName));
                     string messageType = Protocol.ReceiveHeader(ClientSocket);
                     int command = Protocol.ReceiveCommand(ClientSocket);
                     if (command == CommandUtils.SEND_FILE)
                     {
-                        string filePath = courseId.ToString() + "/" + fileName;
-                        FileInfo file = new System.IO.FileInfo(filePath);
+                        string filePath = courseName + "/" + fileName;
+                        FileInfo file = new FileInfo(filePath);
                         file.Directory.Create(); // If the directory already exists, this method does nothing.
 
                         byte[] data = Protocol.ReceiveData(ClientSocket);
@@ -206,18 +208,17 @@ namespace Server
                     }
                     else
                     {
-                        Protocol.Send(ClientSocket, "RES", CommandUtils.ERROR, Encoding.ASCII.GetBytes("Something went wrong, try again"));
+                        Protocol.Send(ClientSocket, "RES", CommandUtils.ERROR, Encoding.ASCII.GetBytes("Wrong command received"));
                     }
                 }
                 else
                 {
-                    Protocol.Send(ClientSocket, "RES", CommandUtils.ERROR, Encoding.ASCII.GetBytes("Course doesn't exist."));
+                    Protocol.Send(ClientSocket, "RES", CommandUtils.ERROR, Encoding.ASCII.GetBytes("Course doesn't exist or user is not registered in it."));
                 }
             }
             catch (Exception e)
             {
-                Console.WriteLine("Something went wrong: {0}", e.Message);
-                throw;
+                Protocol.Send(ClientSocket, "RES", CommandUtils.ERROR, Encoding.ASCII.GetBytes(e.Message));
             }
 
         }

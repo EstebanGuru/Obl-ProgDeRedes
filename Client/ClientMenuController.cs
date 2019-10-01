@@ -9,7 +9,6 @@ namespace ClientController
     public class ClientMenuController
     {
         private Socket ClientSocket;
-        private Socket NotificationSocket;
         private Protocol Protocol;
         private int StudentNumber;
 
@@ -91,7 +90,7 @@ namespace ClientController
             }
             catch (Exception e)
             {
-
+                Console.WriteLine("Something went wrong: {0}", e.Message);
             }
         }
 
@@ -134,11 +133,11 @@ namespace ClientController
             try
             {
                 Console.WriteLine("");
-                Console.Write("Course id: ");
-                string courseId = Console.ReadLine();
+                Console.Write("Course name: ");
+                string courseName = Console.ReadLine();
                 Console.WriteLine("File name with extention: ");
                 string fileName = Console.ReadLine();
-                string fileInfo = string.Join("#", courseId, fileName);
+                string fileInfo = string.Join("#", courseName, fileName);
                 Protocol.Send(ClientSocket, "REQ", CommandUtils.SEND_FILE_REQUEST, Encoding.ASCII.GetBytes(fileInfo));
                 HandleCommunication();
             }
@@ -154,6 +153,7 @@ namespace ClientController
             Console.WriteLine("Califications");
             try
             {
+                string data = StudentNumber.ToString();
                 Protocol.Send(ClientSocket, "REQ", CommandUtils.CALIFICATIONS, Encoding.ASCII.GetBytes(data));
                 HandleCommunication();
             }

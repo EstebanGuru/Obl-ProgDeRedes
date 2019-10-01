@@ -32,7 +32,7 @@ namespace Server
         private static Socket ConfigServer()
         {
             var serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            var ipEndPoint = new IPEndPoint(IPAddress.Parse("192.168.0.101"), 6000);
+            var ipEndPoint = new IPEndPoint(IPAddress.Parse("192.168.1.44"), 6000);
             serverSocket.Bind(ipEndPoint);
             serverSocket.Listen(1000);
             return serverSocket;
