@@ -29,12 +29,12 @@ namespace Client
             {
                 clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 notificationSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                var ipEndPoint = new IPEndPoint(IPAddress.Parse("192.168.1.44"), 0);
+                var ipEndPoint = new IPEndPoint(IPAddress.Parse("192.168.0.101"), 0);
                 clientSocket.Bind(ipEndPoint);
-                clientSocket.Connect(new IPEndPoint(IPAddress.Parse("192.168.1.44"), 6000));
-                var ipNotificationEndPoint = new IPEndPoint(IPAddress.Parse("192.168.1.44"), 0);
+                clientSocket.Connect(new IPEndPoint(IPAddress.Parse("192.168.0.101"), 6000));
+                var ipNotificationEndPoint = new IPEndPoint(IPAddress.Parse("192.168.0.101"), 0);
                 notificationSocket.Bind(ipNotificationEndPoint);
-                notificationSocket.Connect(new IPEndPoint(IPAddress.Parse("192.168.1.44"), 6000));
+                notificationSocket.Connect(new IPEndPoint(IPAddress.Parse("192.168.0.101"), 6000));
                 new Thread(() => ShowMenu()).Start();
                 new Thread(() => DisplayNotifications()).Start();
             }
@@ -47,7 +47,7 @@ namespace Client
         private static void ShowMenu()
         {
             ClientMenuController menuController = new ClientMenuController(
-                clientSocket, notificationSocket,studentNumber);
+                clientSocket, studentNumber);
             menuController.Run();
         }
 
