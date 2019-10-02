@@ -7,6 +7,7 @@ using System.Net.Sockets;
 using System.Threading;
 using ProtocolLibrary;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Server
 {
@@ -31,8 +32,9 @@ namespace Server
 
         private static Socket ConfigServer()
         {
+            string ipAddress = File.ReadAllText(@"configFile.txt");
             var serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            var ipEndPoint = new IPEndPoint(IPAddress.Parse("192.168.1.44"), 6000);
+            var ipEndPoint = new IPEndPoint(IPAddress.Parse(ipAddress), 6000);
             serverSocket.Bind(ipEndPoint);
             serverSocket.Listen(1000);
             return serverSocket;

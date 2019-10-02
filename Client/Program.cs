@@ -5,7 +5,7 @@ using System.Text;
 using ProtocolLibrary;
 using System.Threading;
 using ClientController;
-
+using System.IO;
 
 namespace Client
 {
@@ -27,20 +27,24 @@ namespace Client
         {
             try
             {
-                clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                notificationSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                var ipEndPoint = new IPEndPoint(IPAddress.Parse("192.168.1.44"), 0);
-                clientSocket.Bind(ipEndPoint);
-                clientSocket.Connect(new IPEndPoint(IPAddress.Parse("192.168.1.44"), 6000));
-                var ipNotificationEndPoint = new IPEndPoint(IPAddress.Parse("192.168.1.44"), 0);
-                notificationSocket.Bind(ipNotificationEndPoint);
-                notificationSocket.Connect(new IPEndPoint(IPAddress.Parse("192.168.1.44"), 6000));
-                new Thread(() => ShowMenu()).Start();
-                new Thread(() => DisplayNotifications()).Start();
+                if (File.Exists(@"configFile.txt"))
+                {
+                    string ipAddress = File.ReadAllText(@"configFile.txt");
+                    clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                    notificationSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                    var ipEndPoint = new IPEndPoint(IPAddress.Parse(ipAddress), 0);
+                    clientSocket.Bind(ipEndPoint);
+                    clientSocket.Connect(new IPEndPoint(IPAddress.Parse(ipAddress), 6000));
+                    var ipNotificationEndPoint = new IPEndPoint(IPAddress.Parse(ipAddress), 0);
+                    notificationSocket.Bind(ipNotificationEndPoint);
+                    notificationSocket.Connect(new IPEndPoint(IPAddress.Parse(ipAddress), 6000));
+                    new Thread(() => ShowMenu()).Start();
+                    new Thread(() => DisplayNotifications()).Start();
+                }
             }
             catch (Exception e)
             {
-
+                Console.WriteLine("Error: {0}", e.Message);
             }
         }
 
