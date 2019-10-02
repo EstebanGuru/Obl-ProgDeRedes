@@ -14,6 +14,9 @@ namespace ProtocolLibrary
         public const int AVAILABLE_COURSES = 3;
         public const int CALIFICATIONS = 5;
         public const int DISCONNECT = 6;
+        public const int SEND_FILE_REQUEST = 20;
+        public const int SEND_FILE_PROCEED = 21;
+        public const int SEND_FILE = 22;
 
         //RES Commands
         public const int LOGIN_RESPONSE = 11;
