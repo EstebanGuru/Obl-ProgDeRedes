@@ -27,21 +27,23 @@ namespace Client
         {
             try
             {
-                //if (File.Exists(@"configFile.txt"))
-                //{172.29.3.25
-                //string ipAddress = File.ReadAllText(@"configFile.txt");
-                string ipAddress = "192.168.1.47";
+                if (File.Exists(@"configFile.txt")) { 
+                string[] ipAddress = File.ReadAllText(@"configFile.txt").Split('-');
+                // string ipAddressClient = "10.10.10.51";
+                string ipAddressClient = ipAddress[0];
+                // string ipAddressServer = "10.10.10.51";
+                string ipAddressServer = ipAddress[1];
                 clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                     notificationSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                    var ipEndPoint = new IPEndPoint(IPAddress.Parse(ipAddress), 0);
+                    var ipEndPoint = new IPEndPoint(IPAddress.Parse(ipAddressClient), 0);
                     clientSocket.Bind(ipEndPoint);
-                    clientSocket.Connect(new IPEndPoint(IPAddress.Parse(ipAddress), 6000));
-                    var ipNotificationEndPoint = new IPEndPoint(IPAddress.Parse(ipAddress), 0);
+                    clientSocket.Connect(new IPEndPoint(IPAddress.Parse(ipAddressServer), 6000));
+                    var ipNotificationEndPoint = new IPEndPoint(IPAddress.Parse(ipAddressClient), 0);
                     notificationSocket.Bind(ipNotificationEndPoint);
-                    notificationSocket.Connect(new IPEndPoint(IPAddress.Parse(ipAddress), 6000));
+                    notificationSocket.Connect(new IPEndPoint(IPAddress.Parse(ipAddressServer), 6000));
                     new Thread(() => ShowMenu()).Start();
                     new Thread(() => DisplayNotifications()).Start();
-                //}
+                }
             }
             catch (Exception e)
             {
