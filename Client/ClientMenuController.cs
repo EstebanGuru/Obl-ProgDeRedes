@@ -180,7 +180,7 @@ namespace ClientController
         private void HandleCommunication()
         {
             string header = Protocol.ReceiveHeader(ClientSocket);
-            int command = Protocol.ReceiveCommand(ClientSocket);
+            string command = Protocol.ReceiveCommand(ClientSocket);
             if (header.Equals("RES"))
             {
                 HandleResponse(command);
@@ -190,7 +190,7 @@ namespace ClientController
                 Console.WriteLine("Something went wrong");
             }
         }
-        private void HandleResponse(int command)
+        private void HandleResponse(string command)
         {
             string response = Encoding.ASCII.GetString(Protocol.ReceiveData(ClientSocket)); ;
             switch (command)
@@ -216,6 +216,7 @@ namespace ClientController
                     SendFile(response);
                     break;
                 default:
+                    Console.WriteLine("Nothing to do with {0}", command);
                     break;
             }
         }

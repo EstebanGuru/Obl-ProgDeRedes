@@ -38,8 +38,10 @@ namespace Server
             {
                 try
                 {
+                    Console.WriteLine("waiting request");
                     string messageType = Protocol.ReceiveHeader(ClientSocket);
-                    int command = Protocol.ReceiveCommand(ClientSocket);
+                    string command = Protocol.ReceiveCommand(ClientSocket);
+                    Console.WriteLine("header and command receive");
                     if (messageType.Equals("REQ"))
                     {
                         HandleRequest(command);
@@ -55,18 +57,20 @@ namespace Server
                 }
                 catch (Exception e)
                 {
+                    Console.WriteLine("ERROR: {0}", e.Message);
                     return;
                 }
             }
         }
 
-        private void HandleResponse(int command)
+        private void HandleResponse(string command)
         {
             throw new NotImplementedException();
         }
 
-        private void HandleRequest(int command)
+        private void HandleRequest(string command)
         {
+            Console.WriteLine("handle request {0}", command);
             switch (command)
             {
                 case CommandUtils.LOGIN:
@@ -88,13 +92,17 @@ namespace Server
                     HandleReceiveFile();
                     break;
                 default:
+                    Console.WriteLine("Nothing to do wwith {0}", command);
                     break;
             }
         }
 
         private void HandleLogin()
         {
+            Console.WriteLine("handling login");
             string credentials = Encoding.ASCII.GetString(Protocol.ReceiveData(ClientSocket));
+            Console.WriteLine("receive credentials {0}", credentials);
+
             var arrayCredentials = credentials.Split('#');
             studentId = Int32.Parse(arrayCredentials[0]);
             string password = arrayCredentials[1];
@@ -102,7 +110,9 @@ namespace Server
             {
                 studentLogic.ValidateCredentials(studentId, password);
                 Protocol.Send(ClientSocket, "RES", CommandUtils.LOGIN_RESPONSE, Encoding.ASCII.GetBytes(string.Join("#", studentId)));
+                Console.WriteLine("sendign response");
                 clients.Add(new Utils.StudentSocket(studentId, NotificationSocket));
+                Console.WriteLine("adding client");
             }
             catch (StudentException e)
             {
@@ -194,8 +204,8 @@ namespace Server
                 {
                     Protocol.Send(ClientSocket, "RES", CommandUtils.SEND_FILE_PROCEED, Encoding.ASCII.GetBytes(fileName));
                     string messageType = Protocol.ReceiveHeader(ClientSocket);
-                    int command = Protocol.ReceiveCommand(ClientSocket);
-                    if (command == CommandUtils.SEND_FILE)
+                    string command = Protocol.ReceiveCommand(ClientSocket);
+                    if (command.Equals(CommandUtils.SEND_FILE))
                     {
                         string filePath = courseName + "/" + fileName;
                         FileInfo file = new FileInfo(filePath);

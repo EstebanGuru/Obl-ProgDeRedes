@@ -32,7 +32,8 @@ namespace Server
 
         private static Socket ConfigServer()
         {
-            string ipAddress = File.ReadAllText(@"configFile.txt");
+            //string ipAddress = File.ReadAllText(@"configFile.txt");
+            string ipAddress = "192.168.1.47";
             var serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             var ipEndPoint = new IPEndPoint(IPAddress.Parse(ipAddress), 6000);
             serverSocket.Bind(ipEndPoint);
@@ -169,7 +170,7 @@ namespace Server
                 int calification = int.Parse(Console.ReadLine());
                 courseLogic.AddCalification(courseName, studentId, calification);
                 Utils.StudentSocket clientSocket = clients.Find(studentSocket => studentSocket.StudentId == studentId);
-                Protocol.Send(clientSocket.ClientSocket, "RES", 10);
+                Protocol.Send(clientSocket.ClientSocket, "RES", CommandUtils.CALIFICATION_ADDED_RESPONSE);
                 Console.WriteLine("Calification added correctly");
             }
             catch (CourseException e)
