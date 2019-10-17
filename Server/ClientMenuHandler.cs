@@ -38,10 +38,8 @@ namespace Server
             {
                 try
                 {
-                    Console.WriteLine("waiting request");
                     string messageType = Protocol.ReceiveHeader(ClientSocket);
                     string command = Protocol.ReceiveCommand(ClientSocket);
-                    Console.WriteLine("header and command receive");
                     if (messageType.Equals("REQ"))
                     {
                         HandleRequest(command);
@@ -70,7 +68,6 @@ namespace Server
 
         private void HandleRequest(string command)
         {
-            Console.WriteLine("handle request {0}", command);
             switch (command)
             {
                 case CommandUtils.LOGIN:
@@ -92,16 +89,14 @@ namespace Server
                     HandleReceiveFile();
                     break;
                 default:
-                    Console.WriteLine("Nothing to do wwith {0}", command);
+                    Console.WriteLine("Invalid command received {0}", command);
                     break;
             }
         }
 
         private void HandleLogin()
         {
-            Console.WriteLine("handling login");
             string credentials = Encoding.ASCII.GetString(Protocol.ReceiveData(ClientSocket));
-            Console.WriteLine("receive credentials {0}", credentials);
 
             var arrayCredentials = credentials.Split('#');
             studentId = Int32.Parse(arrayCredentials[0]);
@@ -110,9 +105,7 @@ namespace Server
             {
                 studentLogic.ValidateCredentials(studentId, password);
                 Protocol.Send(ClientSocket, "RES", CommandUtils.LOGIN_RESPONSE, Encoding.ASCII.GetBytes(string.Join("#", studentId)));
-                Console.WriteLine("sendign response");
                 clients.Add(new Utils.StudentSocket(studentId, NotificationSocket));
-                Console.WriteLine("adding client");
             }
             catch (StudentException e)
             {

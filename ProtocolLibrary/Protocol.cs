@@ -24,7 +24,6 @@ namespace ProtocolLibrary
             }
             catch (Exception e)
             {
-                Console.WriteLine("ERROR head {0}", e.Message);
                 Send(socket, "RES", CommandUtils.ERROR, Encoding.ASCII.GetBytes(e.Message));
                 return "";
             }
@@ -48,7 +47,6 @@ namespace ProtocolLibrary
             }
             catch (Exception e)
             {
-                Console.WriteLine("ERROR head {0}", e.Message);
                 Send(socket, "RES", CommandUtils.ERROR, Encoding.ASCII.GetBytes(e.Message));
                 return "";
             }
@@ -79,15 +77,12 @@ namespace ProtocolLibrary
 
         public void Send(Socket socket, string header, string command, byte[] data = null)
         {
-            Console.WriteLine("Sending header {0} command {1} ", header, command);
             // Send header
             var headerInBytes = Encoding.ASCII.GetBytes(header);
-            Console.WriteLine("headerInBytes {0} ", headerInBytes);
             socket.Send(headerInBytes);
 
             // Send command
             string commandString = command.ToString();
-            Console.WriteLine("commandStrn {0}", commandString);
             var commandInBytes = Encoding.ASCII.GetBytes(commandString);
             socket.Send(commandInBytes);
 
@@ -102,9 +97,7 @@ namespace ProtocolLibrary
 
         public byte[] ReceiveData(Socket socket)
         {
-            Console.WriteLine("Receiving data");
             var dataLength = ReceiveLenght(socket);
-            Console.WriteLine("dataLength {0}", dataLength);
             var dataInBytes = new byte[dataLength];
             if (dataLength > 1048576)
             {
@@ -127,7 +120,6 @@ namespace ProtocolLibrary
             }
             else
             {
-                Console.WriteLine("receive simple {0}");
                 var receive = socket.Receive(
                         dataInBytes, 0, dataLength, SocketFlags.None);
                 if (receive == 0)
@@ -163,7 +155,6 @@ namespace ProtocolLibrary
         {
             var lenthOfDataInBytes = BitConverter.GetBytes(lenthOfData);
             var actuallySent = 0;
-            Console.WriteLine("lenthOfDataInBytes {0}", lenthOfDataInBytes);
             while (actuallySent < lenthOfDataInBytes.Length)
             {
                 var sent = socket.Send(
@@ -187,7 +178,6 @@ namespace ProtocolLibrary
                 {
                     dataToSent = lenthOfData - actuallySent;
                 }
-                Console.WriteLine("dataToSent {0}", dataToSent);
                 var sent = socket.Send(
                     dataInBytes, actuallySent, dataToSent, SocketFlags.None);
                 if (sent == 0)
