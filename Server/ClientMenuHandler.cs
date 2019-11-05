@@ -39,7 +39,7 @@ namespace Server
                 try
                 {
                     string messageType = Protocol.ReceiveHeader(ClientSocket);
-                    int command = Protocol.ReceiveCommand(ClientSocket);
+                    string command = Protocol.ReceiveCommand(ClientSocket);
                     if (messageType.Equals("REQ"))
                     {
                         HandleRequest(command);
@@ -55,17 +55,18 @@ namespace Server
                 }
                 catch (Exception e)
                 {
+                    Console.WriteLine("ERROR: {0}", e.Message);
                     return;
                 }
             }
         }
 
-        private void HandleResponse(int command)
+        private void HandleResponse(string command)
         {
             throw new NotImplementedException();
         }
 
-        private void HandleRequest(int command)
+        private void HandleRequest(string command)
         {
             switch (command)
             {
@@ -88,6 +89,7 @@ namespace Server
                     HandleReceiveFile();
                     break;
                 default:
+                    Console.WriteLine("Invalid command received {0}", command);
                     break;
             }
         }
@@ -95,6 +97,7 @@ namespace Server
         private void HandleLogin()
         {
             string credentials = Encoding.ASCII.GetString(Protocol.ReceiveData(ClientSocket));
+
             var arrayCredentials = credentials.Split('#');
             studentId = Int32.Parse(arrayCredentials[0]);
             string password = arrayCredentials[1];
@@ -194,8 +197,8 @@ namespace Server
                 {
                     Protocol.Send(ClientSocket, "RES", CommandUtils.SEND_FILE_PROCEED, Encoding.ASCII.GetBytes(fileName));
                     string messageType = Protocol.ReceiveHeader(ClientSocket);
-                    int command = Protocol.ReceiveCommand(ClientSocket);
-                    if (command == CommandUtils.SEND_FILE)
+                    string command = Protocol.ReceiveCommand(ClientSocket);
+                    if (command.Equals(CommandUtils.SEND_FILE))
                     {
                         string filePath = courseName + "/" + fileName;
                         FileInfo file = new FileInfo(filePath);

@@ -10,22 +10,49 @@ namespace ProtocolLibrary
 
         public string ReceiveHeader(Socket socket)
         {
-            var headerMessagge = new byte[3];
-            socket.Receive(headerMessagge);
-            return Encoding.ASCII.GetString(headerMessagge);
+            try
+            {
+                var headerMessagge = new byte[3];
+                var receive = socket.Receive(
+                            headerMessagge, 0, 3, SocketFlags.None);
+                if (receive == 0)
+                {
+                    Console.WriteLine("ERROR");
+                    Console.ReadLine();
+                }
+                return Encoding.ASCII.GetString(headerMessagge);
+            }
+            catch (Exception e)
+            {
+                Send(socket, "RES", CommandUtils.ERROR, Encoding.ASCII.GetBytes(e.Message));
+                return "";
+            }
+
         }
 
-        public int ReceiveCommand(Socket socket)
+        public string ReceiveCommand(Socket socket)
         {
-
-            var commandInBytes = new byte[2];
-            socket.Receive(commandInBytes);
-            string commandValue = Encoding.ASCII.GetString(commandInBytes);
-            int value = int.Parse(commandValue);
-            return value;
+            try
+            {
+                var commandInBytes = new byte[2];
+                var receive = socket.Receive(
+                            commandInBytes, 0, 2, SocketFlags.None);
+                if (receive == 0)
+                {
+                    Console.WriteLine("ERROR");
+                    Console.ReadLine();
+                }
+                string command = Encoding.ASCII.GetString(commandInBytes);
+                return command;
+            }
+            catch (Exception e)
+            {
+                Send(socket, "RES", CommandUtils.ERROR, Encoding.ASCII.GetBytes(e.Message));
+                return "";
+            }
         }
 
-        public void HandleResponse(int command)
+        public void HandleResponse(string command)
         {
             throw new NotImplementedException();
         }
@@ -48,14 +75,15 @@ namespace ProtocolLibrary
             socket.Send(messagge);
         }
 
-        public void Send(Socket socket, string header, int command, byte[] data = null)
+        public void Send(Socket socket, string header, string command, byte[] data = null)
         {
             // Send header
             var headerInBytes = Encoding.ASCII.GetBytes(header);
             socket.Send(headerInBytes);
 
             // Send command
-            var commandInBytes = Encoding.ASCII.GetBytes(command.ToString());
+            string commandString = command.ToString();
+            var commandInBytes = Encoding.ASCII.GetBytes(commandString);
             socket.Send(commandInBytes);
 
             // Send data
@@ -92,7 +120,12 @@ namespace ProtocolLibrary
             }
             else
             {
-                socket.Receive(dataInBytes);
+                var receive = socket.Receive(
+                        dataInBytes, 0, dataLength, SocketFlags.None);
+                if (receive == 0)
+                {
+                    Console.WriteLine("ERROR");
+                }
             }
             return dataInBytes;
         }
@@ -108,7 +141,13 @@ namespace ProtocolLibrary
         public int ReceiveLenght(Socket socket)
         {
             var dataLengthInBytes = new byte[4];
-            socket.Receive(dataLengthInBytes);
+            var receive = socket.Receive(
+                        dataLengthInBytes, 0, 4, SocketFlags.None);
+            if (receive == 0)
+            {
+                Console.WriteLine("ERROR");
+                Console.ReadLine();
+            }
             return BitConverter.ToInt32(dataLengthInBytes, 0);
         }
 

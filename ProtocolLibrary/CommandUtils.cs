@@ -9,20 +9,21 @@ namespace ProtocolLibrary
     {
         //REQ Commands
         
-        public const int LOGIN = 1;
-        public const int INSCRIPTION = 2;
-        public const int AVAILABLE_COURSES = 3;
-        public const int CALIFICATIONS = 5;
-        public const int DISCONNECT = 6;
-        public const int SEND_FILE_REQUEST = 20;
-        public const int SEND_FILE_PROCEED = 21;
-        public const int SEND_FILE = 22;
+        public const string LOGIN = "01";
+        public const string INSCRIPTION = "02";
+        public const string AVAILABLE_COURSES = "03";
+        public const string CALIFICATIONS = "05";
+        public const string DISCONNECT = "06";
+        public const string SEND_FILE_REQUEST = "20";
+        public const string SEND_FILE_PROCEED = "21";
+        public const string SEND_FILE = "22";
 
         //RES Commands
-        public const int LOGIN_RESPONSE = 11;
-        public const int SUCCESS_MESSAGE = 80;
-        public const int SPLITTED_RESPONSE = 81;
-        public const int ERROR = 99;
+        public const string CALIFICATION_ADDED_RESPONSE = "11";
+        public const string LOGIN_RESPONSE = "11";
+        public const string SUCCESS_MESSAGE = "80";
+        public const string SPLITTED_RESPONSE = "81";
+        public const string ERROR = "99";
 
 
 

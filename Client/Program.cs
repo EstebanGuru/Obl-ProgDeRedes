@@ -27,17 +27,20 @@ namespace Client
         {
             try
             {
-                if (File.Exists(@"configFile.txt"))
-                {
-                    string ipAddress = File.ReadAllText(@"configFile.txt");
-                    clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                if (File.Exists(@"configFile.txt")) { 
+                string[] ipAddress = File.ReadAllText(@"configFile.txt").Split('-');
+                // string ipAddressClient = "10.10.10.51";
+                string ipAddressClient = ipAddress[0];
+                // string ipAddressServer = "10.10.10.51";
+                string ipAddressServer = ipAddress[1];
+                clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                     notificationSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                    var ipEndPoint = new IPEndPoint(IPAddress.Parse(ipAddress), 0);
+                    var ipEndPoint = new IPEndPoint(IPAddress.Parse(ipAddressClient), 0);
                     clientSocket.Bind(ipEndPoint);
-                    clientSocket.Connect(new IPEndPoint(IPAddress.Parse(ipAddress), 6000));
-                    var ipNotificationEndPoint = new IPEndPoint(IPAddress.Parse(ipAddress), 0);
+                    clientSocket.Connect(new IPEndPoint(IPAddress.Parse(ipAddressServer), 6000));
+                    var ipNotificationEndPoint = new IPEndPoint(IPAddress.Parse(ipAddressClient), 0);
                     notificationSocket.Bind(ipNotificationEndPoint);
-                    notificationSocket.Connect(new IPEndPoint(IPAddress.Parse(ipAddress), 6000));
+                    notificationSocket.Connect(new IPEndPoint(IPAddress.Parse(ipAddressServer), 6000));
                     new Thread(() => ShowMenu()).Start();
                     new Thread(() => DisplayNotifications()).Start();
                 }
@@ -45,6 +48,7 @@ namespace Client
             catch (Exception e)
             {
                 Console.WriteLine("Error: {0}", e.Message);
+                Console.ReadLine();
             }
         }
 
@@ -62,10 +66,10 @@ namespace Client
                 try
                 {
                     string messageType = Protocol.ReceiveHeader(notificationSocket);
-                    int command = Protocol.ReceiveCommand(notificationSocket);
+                    string command = Protocol.ReceiveCommand(notificationSocket);
                     if (messageType.Equals("RES"))
                     {
-                        if (command == 10)
+                        if (command.Equals(CommandUtils.CALIFICATION_ADDED_RESPONSE))
                         {
                             Console.WriteLine("");
                             Console.WriteLine("Calification added");
