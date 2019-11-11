@@ -8,6 +8,7 @@ using System.Threading;
 using ProtocolLibrary;
 using System.Collections.Generic;
 using System.IO;
+using Server.Logs;
 
 namespace Server
 {
@@ -18,6 +19,7 @@ namespace Server
         static CourseLogic courseLogic;
         static Socket serverSocket;
         static Protocol Protocol;
+        static LogsLogic logs;
         static List<Utils.StudentSocket> clients;
         static void Main(string[] args)
         {
@@ -26,14 +28,15 @@ namespace Server
             Protocol = new Protocol();
             serverSocket = ConfigServer();
             clients = new List<Utils.StudentSocket>();
+            logs = new LogsLogic();
             new Thread(() => ListenClients(serverSocket)).Start();
             new Thread(() => ShowMenu()).Start();
         }
 
         private static Socket ConfigServer()
         {
-            string ipAddress = File.ReadAllText(@"configFile.txt");
-            // string ipAddress = "10.10.10.51";
+            //string ipAddress = File.ReadAllText(@"configFile.txt");
+            string ipAddress = "172.29.1.7";
             var serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             var ipEndPoint = new IPEndPoint(IPAddress.Parse(ipAddress), 6000);
             serverSocket.Bind(ipEndPoint);
@@ -53,7 +56,7 @@ namespace Server
 
         private static void ClientHandler(Socket clientSocket, Socket notificationSocket)
         {
-            ClientMenuHandler clientHandler = new ClientMenuHandler(clientSocket, notificationSocket, studentLogic, courseLogic, ref clients);
+            ClientMenuHandler clientHandler = new ClientMenuHandler(logs, clientSocket, notificationSocket, studentLogic, courseLogic, ref clients);
             clientHandler.Run();
         }
 
@@ -119,6 +122,7 @@ namespace Server
             try
             {
                 studentLogic.AddStudent(studentId, studentEmail);
+                logs.SendTimestamp("CreateStudent", "admin", "Student registered: " + studentId);
                 Console.WriteLine("Student created correctly");
             }
             catch (StudentException e)
@@ -138,6 +142,7 @@ namespace Server
             try
             {
                 courseLogic.AddCourse(courseId, courseName);
+                logs.SendTimestamp("CreateCourse", "admin", "Course created: " + courseName);
                 Console.WriteLine("Course created correctly");
             }
             catch (CourseException e)
@@ -154,6 +159,7 @@ namespace Server
             Console.WriteLine("Course name: ");
             string courseName = Console.ReadLine();
             courseLogic.DeleteCourse(courseName);
+            logs.SendTimestamp("DeleteCourse", "admin", "Delete course: " + courseName);
             Console.WriteLine("Course deleted correctly");
         }
 

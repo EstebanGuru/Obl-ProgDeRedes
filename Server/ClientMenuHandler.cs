@@ -9,6 +9,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using Server.Domain;
+using Server.Logs;
 
 namespace Server
 {
@@ -20,9 +21,10 @@ namespace Server
         private StudentLogic studentLogic;
         private CourseLogic courseLogic;
         private List<Utils.StudentSocket> clients;
+        private LogsLogic Logs;
         private int studentId;
 
-        public ClientMenuHandler(Socket clientSocket, Socket notificationSocket, StudentLogic studentLogicHandler, CourseLogic courseLogicHandler, ref List<Utils.StudentSocket> pClients)
+        public ClientMenuHandler(LogsLogic logs, Socket clientSocket, Socket notificationSocket, StudentLogic studentLogicHandler, CourseLogic courseLogicHandler, ref List<Utils.StudentSocket> pClients)
         {
             Protocol = new Protocol();
             ClientSocket = clientSocket;
@@ -30,6 +32,7 @@ namespace Server
             studentLogic = studentLogicHandler;
             courseLogic = courseLogicHandler;
             clients = pClients;
+            Logs = logs;
         }
 
         public void Run()
@@ -123,6 +126,7 @@ namespace Server
             {
                 courseLogic.AddStudent(studentId, courseName);
                 Protocol.Send(ClientSocket, "RES", CommandUtils.SUCCESS_MESSAGE, Encoding.ASCII.GetBytes("Inscription created successfully."));
+                Logs.SendTimestamp("Inscription", studentId.ToString(), "Inscripction to course: " + courseName);
             }
             catch (StudentException e)
             {

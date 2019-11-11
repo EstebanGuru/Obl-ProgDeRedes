@@ -6,10 +6,10 @@ using System.Text;
 namespace Server.BusinessLogic.Exceptions
 {
     [Serializable]
-    public class InvalidStudentId : StudentException
+    public class InvalidId : StudentException
     {
         private const string MESSAGE = "Student id is already registered.";
-        public InvalidStudentId() : base(MESSAGE)
+        public InvalidId() : base(MESSAGE)
         {
         }
     }
