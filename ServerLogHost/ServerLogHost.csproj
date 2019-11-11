@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{57B7E1E3-BD79-4563-BD28-411E1A5A4228}</ProjectGuid>
+    <ProjectGuid>{34203249-F4B6-4931-8A92-96CA07195F4D}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>ServerAPI</RootNamespace>
-    <AssemblyName>ServerAPI</AssemblyName>
+    <RootNamespace>ServerLogHost</RootNamespace>
+    <AssemblyName>ServerLogHost</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -35,7 +35,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Messaging" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -51,13 +51,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DTOs\DTOs.csproj">
-      <Project>{4e8d5456-cd71-47e0-8b12-7869a7b9fb3c}</Project>
-      <Name>DTOs</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Server\Server.csproj">
-      <Project>{EAA02085-7711-49B8-9688-3F49E7AE4E51}</Project>
-      <Name>Server</Name>
+    <ProjectReference Include="..\WcfServerLog\WcfLogServices.csproj">
+      <Project>{b3d2082c-dcd7-4845-8de2-a5504e9fce10}</Project>
+      <Name>WcfLogServices</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

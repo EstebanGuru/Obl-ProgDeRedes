@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{E8105269-EDD4-496D-BC92-9022E7994EFE}</ProjectGuid>
+    <ProjectGuid>{03E15F84-F471-4356-8FD5-124DBDA51E76}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>ClientHTTP</RootNamespace>
-    <AssemblyName>ClientHTTP</AssemblyName>
+    <RootNamespace>HttpClient</RootNamespace>
+    <AssemblyName>HttpClient</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -35,7 +35,8 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Messaging" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -44,17 +45,50 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Connected Services\LogServices\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Connected Services\LogServices\HttpClient.LogServices.TimestampLog.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\LogServices\LogService.wsdl" />
+    <None Include="Connected Services\LogServices\LogService.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Connected Services\LogServices\LogService1.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Connected Services\LogServices\LogService2.xsd">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DTOs\DTOs.csproj">
-      <Project>{4e8d5456-cd71-47e0-8b12-7869a7b9fb3c}</Project>
-      <Name>DTOs</Name>
-    </ProjectReference>
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadataStorage Include="Connected Services\LogServices\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Connected Services\LogServices\LogService.disco" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Connected Services\LogServices\configuration91.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Connected Services\LogServices\configuration.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Connected Services\LogServices\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
