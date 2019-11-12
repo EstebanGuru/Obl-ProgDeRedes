@@ -9,6 +9,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using Server.Domain;
+using System.Threading.Tasks;
 
 namespace Server
 {
@@ -32,7 +33,7 @@ namespace Server
             clients = pClients;
         }
 
-        public void Run()
+        public Task Run()
         {
             while (true)
             {
@@ -56,7 +57,7 @@ namespace Server
                 catch (Exception e)
                 {
                     Console.WriteLine("ERROR: {0}", e.Message);
-                    return;
+                    // return;
                 }
             }
         }

@@ -8,6 +8,7 @@ using System.Threading;
 using ProtocolLibrary;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Server
 {
@@ -19,15 +20,15 @@ namespace Server
         static Socket serverSocket;
         static Protocol Protocol;
         static List<Utils.StudentSocket> clients;
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             studentLogic = new StudentLogic();
             courseLogic = new CourseLogic();
             Protocol = new Protocol();
             serverSocket = ConfigServer();
             clients = new List<Utils.StudentSocket>();
-            new Thread(() => ListenClients(serverSocket)).Start();
-            new Thread(() => ShowMenu()).Start();
+            await Task.Run(() => ListenClients(serverSocket).ConfigureAwait(false));
+            await Task.Run(() => ShowMenu());
         }
 
         private static Socket ConfigServer()
@@ -41,20 +42,27 @@ namespace Server
             return serverSocket;
         }
 
-        private static void ListenClients(Socket serverSocket)
+        private static async Task ListenClients(Socket serverSocket)
         {
             while (true)
             {
-                var clientSocket = serverSocket.Accept();
-                var notificationSocket = serverSocket.Accept();
-                new Thread(() => ClientHandler(clientSocket, notificationSocket)).Start();
+                try
+                {
+                    var clientSocket = await serverSocket.AcceptAsync().ConfigureAwait(false);
+                    var notificationSocket = serverSocket.Accept();
+                    await Task.Run(() => ClientHandler(clientSocket, notificationSocket));
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("chau cleint");
+                }
             }
         }
 
-        private static void ClientHandler(Socket clientSocket, Socket notificationSocket)
+        private static async void ClientHandler(Socket clientSocket, Socket notificationSocket)
         {
             ClientMenuHandler clientHandler = new ClientMenuHandler(clientSocket, notificationSocket, studentLogic, courseLogic, ref clients);
-            clientHandler.Run();
+            await Task.Run(() => clientHandler.Run().ConfigureAwait(false));
         }
 
         private static void ShowMenu()
