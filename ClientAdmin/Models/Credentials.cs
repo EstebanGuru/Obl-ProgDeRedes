@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HttpClientApp.Models
+namespace ClientAdmin.Models
 {
     public class Credentials
     {
