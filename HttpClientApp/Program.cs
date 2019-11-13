@@ -1,16 +1,22 @@
-﻿using System;
+﻿using HttpClientApp.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HttpClient
+namespace HttpClientApp
 {
     class Program
     {
+        public static HttpClient WebClient = new HttpClient();
+
         static void Main(string[] args)
         {
-            _ = Run();
+            Program program = new Program();
+            program.HandleLogin();
+            //_ = Run();
         }
 
         private static async Task Run()
@@ -33,6 +39,24 @@ namespace HttpClient
                 Console.WriteLine("");
                 Console.WriteLine("");
             }
+        }
+
+        private void HandleLogin()
+        {
+            Console.WriteLine("Email: ");
+            string email = Console.ReadLine();
+            //Console.WriteLine("Password: ");
+            //string password = Console.ReadLine();
+            //Credentials credentials = new Credentials()
+            //{
+            //    Email = email,
+            //    Password = password,
+            //};
+            string endpoint = "http://localhost:44344/api/Teachers";
+            // HttpResponseMessage httpResponseMsg = WebClient.PostAsJsonAsync(endpoint, credentials).Result;
+            HttpResponseMessage webResponse = WebClient.GetAsync(endpoint).Result;
+
+            Console.ReadLine();
         }
 
         private static void HandleViewLogs()

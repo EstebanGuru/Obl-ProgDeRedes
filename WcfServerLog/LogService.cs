@@ -10,7 +10,6 @@ namespace WcfLogServices
     {
         public List<TimestampLog> GetLogs(string filter)
         {
-            Console.WriteLine("Pidiendo logs ocn filtro {0} ", filter);
             string queuePath = @".\Private$\adminQueue";
 
             List<TimestampLog> result = new List<TimestampLog>();
