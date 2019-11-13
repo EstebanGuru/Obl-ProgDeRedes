@@ -27,7 +27,6 @@ namespace ServerAdmin.Controllers
             }
 
             IEnumerable<Teacher> teachers = db.Teachers;
-            Teacher testT = teachers.FirstOrDefault();
             Teacher teacher = teachers.Where(t => t.Email == credentials.Email && t.Password == credentials.Password).FirstOrDefault();
             if (teacher == null) return BadRequest("Invalid credentials");
             IEnumerable<Session> sessions = db.Sessions;

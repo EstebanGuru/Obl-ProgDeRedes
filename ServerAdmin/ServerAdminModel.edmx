@@ -34,14 +34,7 @@ warning 6002: The table/view 'ServerAdmin.dbo.Teacher' does not have a primary k
         <EntityContainer Name="ServerAdminModelStoreContainer">
           <EntitySet Name="Session" EntityType="Self.Session" store:Type="Tables" Schema="dbo">
           </EntitySet>
-          <EntitySet Name="Teacher" EntityType="Self.Teacher" store:Type="Tables" store:Schema="dbo">
-            <DefiningQuery>SELECT 
-    [Teacher].[Id] AS [Id], 
-    [Teacher].[Name] AS [Name], 
-    [Teacher].[LastName] AS [LastName], 
-    [Teacher].[Email] AS [Email], 
-    [Teacher].[Password] AS [Password]
-    FROM [dbo].[Teacher] AS [Teacher]</DefiningQuery>
+          <EntitySet Name="Teacher" EntityType="Self.Teacher" store:Type="Tables" Schema="dbo">
           </EntitySet>
         </EntityContainer>
       </Schema>

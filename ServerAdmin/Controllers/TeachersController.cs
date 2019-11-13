@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using ServerAdmin;
+using ServerAdmin.Models;
 
 namespace ServerAdmin.Controllers
 {
@@ -72,12 +73,20 @@ namespace ServerAdmin.Controllers
 
         // POST: api/Teachers
         [ResponseType(typeof(Teacher))]
-        public IHttpActionResult PostTeacher(Teacher teacher)
+        public IHttpActionResult PostTeacher(TeacherDTO teacherDTO)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
+            Teacher teacher = new Teacher()
+            {
+                Name = teacherDTO.Name,
+                LastName = teacherDTO.LastName,
+                Email = teacherDTO.Email,
+                Password = teacherDTO.Password,
+                Id = Guid.NewGuid(),
+            };
 
             db.Teachers.Add(teacher);
 
@@ -85,7 +94,7 @@ namespace ServerAdmin.Controllers
             {
                 db.SaveChanges();
             }
-            catch (DbUpdateException)
+            catch (DbUpdateException e)
             {
                 if (TeacherExists(teacher.Id))
                 {
@@ -93,11 +102,11 @@ namespace ServerAdmin.Controllers
                 }
                 else
                 {
-                    throw;
+                    BadRequest("Some error in data base " + e.Message);
                 }
             }
 
-            return CreatedAtRoute("DefaultApi", new { id = teacher.Id }, teacher);
+            return Ok("Teacher created succesfully");
         }
 
         // DELETE: api/Teachers/5

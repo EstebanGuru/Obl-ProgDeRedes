@@ -11,6 +11,7 @@ namespace ClientAdmin
     class Program
     {
         public static HttpClient WebClient = new HttpClient();
+        private string Endpoint = "https://localhost:44318/api/"; //TODO - mover a constante
         public static string token;
         static void Main(string[] args)
         {
@@ -19,22 +20,27 @@ namespace ClientAdmin
 
         private static async Task Run()
         {
+            Program program = new Program();
             while (true)
             {
                 if (token == null)
                 {
-                    Program program = new Program();
                     program.HandleLogin();
                 } else
                 {
                     Console.WriteLine("**************  Menu ***************");
                     Console.WriteLine("1: View Logs ");
+                    Console.WriteLine("2: Create Teacher ");
+                    Console.WriteLine("3: Qualify material ");
                     string strOption = Console.ReadLine();
                     int option = Int32.Parse(strOption);
                     switch (option)
                     {
                         case 1:
                             HandleViewLogs();
+                            break;
+                        case 2:
+                            program.HandleAddTeacher();
                             break;
                         default:
                             break;
@@ -43,6 +49,36 @@ namespace ClientAdmin
                 }
                 
             }
+        }
+
+        private void HandleAddTeacher()
+        {
+            Console.WriteLine("Name: ");
+            string name = Console.ReadLine();
+            Console.WriteLine("Lastname: ");
+            string lastname = Console.ReadLine();
+            Console.WriteLine("Email: ");
+            string email = Console.ReadLine();
+            Console.WriteLine("Password: ");
+            string password = Console.ReadLine();
+            Teacher teacher = new Teacher()
+            {
+                Name = name,
+                LastName = lastname,
+                Email = email,
+                Password = password,
+            };
+            string postTeacher = Endpoint + "Teachers";
+            HttpResponseMessage httpResponseMsg = WebClient.PostAsJsonAsync(postTeacher, teacher).Result;
+            if (httpResponseMsg.IsSuccessStatusCode)
+            {
+                Console.WriteLine("Teacher added succesfully");
+            }
+            else
+            {
+                Console.WriteLine("The following error ocurred {0}", httpResponseMsg.Content.ReadAsStringAsync());
+            }
+
         }
 
         private void HandleLogin()
@@ -56,8 +92,8 @@ namespace ClientAdmin
                 Email = email,
                 Password = password,
             };
-            string endpoint = "https://localhost:44318/api/login";
-            HttpResponseMessage httpResponseMsg = WebClient.PostAsJsonAsync(endpoint, credentials).Result;
+            string loginEndpoint = Endpoint + "login";
+            HttpResponseMessage httpResponseMsg = WebClient.PostAsJsonAsync(loginEndpoint, credentials).Result;
             if (httpResponseMsg.IsSuccessStatusCode)
             {
                 token = httpResponseMsg.Content.ReadAsAsync<Session>().Result.Id;
