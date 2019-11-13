@@ -12,7 +12,6 @@ namespace ClientController
         private Protocol Protocol;
         private int StudentNumber;
 
-
         public ClientMenuController(Socket clientSocket, int studentNumber)
         {
             Protocol = new Protocol();

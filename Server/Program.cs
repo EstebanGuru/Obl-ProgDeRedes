@@ -8,6 +8,7 @@ using System.Threading;
 using ProtocolLibrary;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using Server.Logs;
 
 namespace Server
@@ -21,7 +22,7 @@ namespace Server
         static Protocol Protocol;
         static LogsLogic logs;
         static List<Utils.StudentSocket> clients;
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             studentLogic = new StudentLogic();
             courseLogic = new CourseLogic();
@@ -29,14 +30,14 @@ namespace Server
             serverSocket = ConfigServer();
             clients = new List<Utils.StudentSocket>();
             logs = new LogsLogic();
-            new Thread(() => ListenClients(serverSocket)).Start();
-            new Thread(() => ShowMenu()).Start();
+            await Task.Run(() => ListenClients(serverSocket).ConfigureAwait(false));
+            await Task.Run(() => ShowMenu());
         }
 
         private static Socket ConfigServer()
         {
             //string ipAddress = File.ReadAllText(@"configFile.txt");
-            string ipAddress = "172.29.1.7";
+            string ipAddress = "10.10.10.51";
             var serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             var ipEndPoint = new IPEndPoint(IPAddress.Parse(ipAddress), 6000);
             serverSocket.Bind(ipEndPoint);
@@ -44,20 +45,27 @@ namespace Server
             return serverSocket;
         }
 
-        private static void ListenClients(Socket serverSocket)
+        private static async Task ListenClients(Socket serverSocket)
         {
             while (true)
             {
-                var clientSocket = serverSocket.Accept();
-                var notificationSocket = serverSocket.Accept();
-                new Thread(() => ClientHandler(clientSocket, notificationSocket)).Start();
+                try
+                {
+                    var clientSocket = await serverSocket.AcceptAsync().ConfigureAwait(false);
+                    var notificationSocket = serverSocket.Accept();
+                    await Task.Run(() => ClientHandler(clientSocket, notificationSocket));
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("chau cleint");
+                }
             }
         }
 
-        private static void ClientHandler(Socket clientSocket, Socket notificationSocket)
+        private static async void ClientHandler(Socket clientSocket, Socket notificationSocket)
         {
             ClientMenuHandler clientHandler = new ClientMenuHandler(logs, clientSocket, notificationSocket, studentLogic, courseLogic, ref clients);
-            clientHandler.Run();
+            await Task.Run(() => clientHandler.Run().ConfigureAwait(false));
         }
 
         private static void ShowMenu()

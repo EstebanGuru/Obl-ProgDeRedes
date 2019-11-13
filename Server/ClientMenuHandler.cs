@@ -9,6 +9,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using Server.Domain;
+using System.Threading.Tasks;
 using Server.Logs;
 
 namespace Server
@@ -35,7 +36,7 @@ namespace Server
             Logs = logs;
         }
 
-        public void Run()
+        public Task Run()
         {
             while (true)
             {
@@ -59,7 +60,7 @@ namespace Server
                 catch (Exception e)
                 {
                     Console.WriteLine("ERROR: {0}", e.Message);
-                    return;
+                    // return;
                 }
             }
         }

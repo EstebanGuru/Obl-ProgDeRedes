@@ -27,6 +27,7 @@ namespace Server.Logs
             using (var messageQueue = new MessageQueue(QueuePath))
             {
                 var log = new Message(timestamp);
+                log.Label = label;
                 messageQueue.Send(log);
             }
 
