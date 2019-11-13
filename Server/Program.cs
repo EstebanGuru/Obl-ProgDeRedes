@@ -37,7 +37,7 @@ namespace Server
         private static Socket ConfigServer()
         {
             //string ipAddress = File.ReadAllText(@"configFile.txt");
-            string ipAddress = "172.29.1.7";
+            string ipAddress = "10.10.10.51";
             var serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             var ipEndPoint = new IPEndPoint(IPAddress.Parse(ipAddress), 6000);
             serverSocket.Bind(ipEndPoint);

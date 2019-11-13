@@ -39,11 +39,35 @@ namespace HttpClient
         {
             Console.WriteLine("**************  Logs Menu  *****************");
             Console.WriteLine("1: View all ");
+            Console.WriteLine("2: Alta alumnos");
+            Console.WriteLine("3: Alta docentes");
+            Console.WriteLine("4: Alta curso");
+            Console.WriteLine("5: Baja curso");
+            Console.WriteLine("6: Inscripciones a cursos");
+            Console.WriteLine("7: Coreccion de materiales");
             string strOption = Console.ReadLine();
             int option = Int32.Parse(strOption);
             switch (option)
             {
                 case 1:
+                    HandleRequestLogs("All");
+                    break;
+                case 2:
+                    HandleRequestLogs("CreateStudent");
+                    break;
+                case 3:
+                    HandleRequestLogs("CreateCourse"); // Cambiar por docentes.
+                    break;
+                case 4:
+                    HandleRequestLogs("CreateCourse");
+                    break;
+                case 5:
+                    HandleRequestLogs("DeleteCourse");
+                    break;
+                case 6:
+                    HandleRequestLogs("Inscription");
+                    break;
+                case 7:
                     HandleRequestLogs("All");
                     break;
                 default:
@@ -58,7 +82,7 @@ namespace HttpClient
                 Console.WriteLine("ask logs");
                 try
                 {
-                    var logs = client.GetLogs("All");
+                    var logs = client.GetLogs(filter);
                     foreach (var item in logs)
                     {
                         Console.WriteLine(item.Message);
