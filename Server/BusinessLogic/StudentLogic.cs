@@ -32,7 +32,7 @@ namespace Server.BusinessLogic
         {
             if (Students.ToList().Exists(student => student.Id == studentId))
             {
-                throw new InvalidStudentId();
+                throw new InvalidId();
             }
         }
 
