@@ -10,12 +10,14 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using ServerAdmin;
 using ServerAdmin.Models;
+using LogsLibrary;
 
 namespace ServerAdmin.Controllers
 {
     public class TeachersController : ApiController
     {
         private ServerAdminEntities db = new ServerAdminEntities();
+        private LogsLogic Logs = new LogsLogic(); 
 
         // GET: api/Teachers
         public IQueryable<Teacher> GetTeachers()
@@ -105,7 +107,7 @@ namespace ServerAdmin.Controllers
                     BadRequest("Some error in data base " + e.Message);
                 }
             }
-
+            Logs.SendTimestamp("CreateStudent", "admin", "Teacher added: " + teacherDTO.Name);
             return Ok("Teacher created succesfully");
         }
 
