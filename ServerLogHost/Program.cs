@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.ServiceModel;
 using System.ServiceModel.Description;
+using System.Configuration;
 
 namespace ServerLogHost
 {
@@ -15,7 +16,7 @@ namespace ServerLogHost
             ServiceHost studentServiceHost = null;
             try
             {
-                Uri httpBaseAddress = new Uri("http://localhost:4321/LogService");
+                Uri httpBaseAddress = new Uri(ConfigurationManager.AppSettings["httpBaseAddress"]);
 
                 //Instantiate ServiceHost
                 studentServiceHost = new ServiceHost(typeof(WcfLogServices.LogService),
