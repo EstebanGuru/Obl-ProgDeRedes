@@ -196,7 +196,7 @@ namespace Server
                 var arrayFileInfo = fileInfo.Split('#');
                 string courseName = arrayFileInfo[0];
                 string fileName = arrayFileInfo[1];
-                StudentCourse inscription = courseLogic.Inscriptions.Find(i => i.CourseName == courseName && i.StudentId == studentId);
+                StudentCourse inscription = CourseLogic.Inscriptions.Find(i => i.CourseName == courseName && i.StudentId == studentId);
                 if (inscription != null)
                 {
                     Protocol.Send(ClientSocket, "RES", CommandUtils.SEND_FILE_PROCEED, Encoding.ASCII.GetBytes(fileName));
