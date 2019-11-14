@@ -28,11 +28,9 @@ namespace Client
             try
             {
                 if (File.Exists(@"configFile.txt")) { 
-                 // string[] ipAddress = File.ReadAllText(@"configFile.txt").Split('-');
-                string ipAddressClient = "192.168.0.105";
-                // string ipAddressClient = ipAddress[0];
-                string ipAddressServer = "192.168.0.105";
-                // string ipAddressServer = ipAddress[1];
+                string[] ipAddress = File.ReadAllText(@"configFile.txt").Split('-');
+                string ipAddressClient = ipAddress[0];
+                string ipAddressServer = ipAddress[1];
                 clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                     notificationSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                     var ipEndPoint = new IPEndPoint(IPAddress.Parse(ipAddressClient), 0);
