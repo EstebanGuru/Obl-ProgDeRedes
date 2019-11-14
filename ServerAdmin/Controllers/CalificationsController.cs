@@ -1,4 +1,5 @@
 ﻿using IRemotingCourseLogic;
+using LogsLibrary;
 using ServerAdmin.Models;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,8 @@ namespace ServerAdmin.Controllers
     public class CalificationsController : ApiController
     {
         private string RemoteAddress = ConfigurationManager.AppSettings["RemotingAddress"];
+        private LogsLogic Logs = new LogsLogic(ConfigurationManager.AppSettings.Get("LocalPrivateQueue"));
+
         [Route("api/Calification")]
         [ResponseType(typeof(string))]
         public IHttpActionResult PostCalificaion(StudentCourseDTO calification)
@@ -25,14 +28,23 @@ namespace ServerAdmin.Controllers
             var remoteServer = (ICourseLogic)Activator.GetObject(
                 typeof(ICourseLogic),
                 RemoteAddress);
-            string response = remoteServer.AddCalificationRemoting(calification.CourseName, calification.StudentId, calification.Calification);
-            if (response.Equals("OK"))
+            try
             {
-                return Ok(response);
-            } else
+                string response = remoteServer.AddCalificationRemoting(calification.CourseName, calification.StudentId, calification.Calification);
+                if (response.Equals("OK"))
+                {
+                    Logs.SendTimestamp("AddCalification", "admin", "Calification added: " + calification.Calification);
+                    return Ok(response);
+                }
+                else
+                {
+                    return BadRequest(response);
+                }
+            }
+            catch (Exception e)
             {
-                return BadRequest(response);
-            }            
+                return BadRequest(e.Message);
+            }
         }
 
         [Route("api/Califications")]
@@ -52,7 +64,7 @@ namespace ServerAdmin.Controllers
             {
                 return BadRequest("Error trying to get califications");
             }
-            
+
         }
     }
 }

@@ -33,14 +33,17 @@ namespace Server.BusinessLogic
     public class CourseLogic : MarshalByRefObject, ICourseLogic
     {
         public IList<Course> Courses { get; set; }
-        public List<StudentCourse> Inscriptions { get; set; }
+        public static List<StudentCourse> Inscriptions { get; set; }
 
         public StudentLogic studentLogic = new StudentLogic();
 
         public CourseLogic()
         {
             Courses = new List<Course>();
-            Inscriptions = new List<StudentCourse>();
+            if (Inscriptions == null)
+            {
+                Inscriptions = new List<StudentCourse>();
+            }
         }
         public void AddCourse(int courseId, string courseName)
         {
@@ -138,6 +141,7 @@ namespace Server.BusinessLogic
                 {
                     throw new CourseException("Student it's not enrolled in the course");
                 }
+
                 inscription.AddCalification(calification);
             }
         }
