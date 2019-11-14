@@ -191,7 +191,7 @@ namespace ClientAdmin
                     HandleRequestLogs("CreateStudent");
                     break;
                 case 3:
-                    HandleRequestLogs("CreateTeacher"); // Cambiar por docentes.
+                    HandleRequestLogs("CreateTeacher");
                     break;
                 case 4:
                     HandleRequestLogs("CreateCourse");
@@ -203,7 +203,7 @@ namespace ClientAdmin
                     HandleRequestLogs("Inscription");
                     break;
                 case 7:
-                    HandleRequestLogs("All");
+                    HandleRequestLogs("AddCalification");
                     break;
                 default:
                     break;
