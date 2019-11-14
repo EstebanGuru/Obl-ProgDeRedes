@@ -103,12 +103,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\CalificationsController.cs" />
     <Compile Include="Controllers\SessionsController.cs" />
     <Compile Include="Controllers\TeachersController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\Credentials.cs" />
+    <Compile Include="Models\StudentCourseDTO.cs" />
     <Compile Include="Models\TeacherDTO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServerAdminModel.Context.cs">
@@ -150,6 +152,10 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\IRemotingCourseLogic\IRemotingCourseLogic.csproj">
+      <Project>{b55f827f-a240-4354-9f4d-aab372abef0f}</Project>
+      <Name>IRemotingCourseLogic</Name>
+    </ProjectReference>
     <ProjectReference Include="..\LogsLibrary\LogsLibrary.csproj">
       <Project>{d31e1a81-f11a-4c41-92b8-0f2644bc7d19}</Project>
       <Name>LogsLibrary</Name>

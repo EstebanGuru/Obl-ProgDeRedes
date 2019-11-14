@@ -1,5 +1,7 @@
-﻿using Server.BusinessLogic.Exceptions;
+﻿using IRemotingCourseLogic;
+using Server.BusinessLogic.Exceptions;
 using Server.Domain;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -28,7 +30,7 @@ namespace Server.BusinessLogic
             Calification = calification;
         }
     }
-    public class CourseLogic
+    public class CourseLogic : MarshalByRefObject, ICourseLogic
     {
         public IList<Course> Courses { get; set; }
         public List<StudentCourse> Inscriptions { get; set; }
@@ -154,6 +156,26 @@ namespace Server.BusinessLogic
                     }
                 }
                 return ret;
+            }
+        }
+
+        public List<StudentCourse> GetTopCalifications()
+        {
+            IEnumerable<StudentCourse> result = Inscriptions.OrderByDescending(i => i.Calification);
+            result = result.Take(10);
+            return result.ToList();
+        }
+
+        public string AddCalificationRemoting(string courseName, int studentId, int calification)
+        {
+            try
+            {
+                AddCalification(courseName, studentId, calification);
+                return "OK";
+            }
+            catch (CourseException e)
+            {
+                return e.Message;
             }
         }
     }

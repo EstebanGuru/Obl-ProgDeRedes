@@ -9,6 +9,7 @@ using System.Text;
 using Server.Domain;
 using System.Threading.Tasks;
 using LogsLibrary;
+using IRemotingCourseLogic;
 
 namespace Server
 {

@@ -10,6 +10,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using LogsLibrary;
+using System.Runtime.Remoting;
+using System.Runtime.Remoting.Channels;
+using System.Runtime.Remoting.Channels.Tcp;
 
 namespace Server
 {
@@ -30,6 +33,14 @@ namespace Server
             serverSocket = ConfigServer();
             clients = new List<Utils.StudentSocket>();
             logs = new LogsLogic();
+            var remotingServiceTcpChannel = new TcpChannel(7000);
+            ChannelServices.RegisterChannel(
+                remotingServiceTcpChannel,
+                false);
+            RemotingConfiguration.RegisterWellKnownServiceType(
+                typeof(CourseLogic),
+                "courseLogicService",
+                WellKnownObjectMode.SingleCall);
             await Task.Run(() => ListenClients(serverSocket).ConfigureAwait(false));
             await Task.Run(() => ShowMenu());
         }

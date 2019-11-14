@@ -40,7 +40,10 @@ namespace ClientAdmin
                             HandleViewLogs();
                             break;
                         case 2:
-                            program.HandleAddTeacher();
+                            await program.HandleAddTeacher();
+                            break;
+                        case 3:
+                            await program.HandleAddCalification();
                             break;
                         default:
                             break;
@@ -51,7 +54,34 @@ namespace ClientAdmin
             }
         }
 
-        private void HandleAddTeacher()
+        private async Task HandleAddCalification()
+        {
+            Console.WriteLine("StudentId: ");
+            int studentId = Int32.Parse(Console.ReadLine());
+            Console.WriteLine("Course name: ");
+            string courseName = Console.ReadLine();
+            Console.WriteLine("Calification: ");
+            int calification = Int32.Parse(Console.ReadLine());
+            StudentCourse calificationDTO = new StudentCourse()
+            {
+                StudentId = studentId,
+                CourseName = courseName,
+                Calification = calification,
+            };
+            string postCalification = Endpoint + "Calification";
+            HttpResponseMessage httpResponseMsg = WebClient.PostAsJsonAsync(postCalification, calificationDTO).Result;
+            if (httpResponseMsg.IsSuccessStatusCode)
+            {
+                Console.WriteLine("Teacher added succesfully");
+            }
+            else
+            {
+                string msg = await httpResponseMsg.Content.ReadAsStringAsync();
+                Console.WriteLine("The following error ocurred {0}", msg);
+            }
+        }
+
+        private async Task HandleAddTeacher()
         {
             Console.WriteLine("Name: ");
             string name = Console.ReadLine();
@@ -76,7 +106,8 @@ namespace ClientAdmin
             }
             else
             {
-                Console.WriteLine("The following error ocurred {0}", httpResponseMsg.Content.ReadAsStringAsync());
+                string msg = await httpResponseMsg.Content.ReadAsStringAsync();
+                Console.WriteLine("The following error ocurred {0}", msg);
             }
 
         }

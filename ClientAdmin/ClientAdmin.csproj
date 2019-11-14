@@ -58,6 +58,7 @@
     </Compile>
     <Compile Include="Models\Credentials.cs" />
     <Compile Include="Models\Session.cs" />
+    <Compile Include="Models\StudentCourse.cs" />
     <Compile Include="Models\Teacher.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

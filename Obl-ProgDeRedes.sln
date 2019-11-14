@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerAdmin", "ServerAdmin\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogsLibrary", "LogsLibrary\LogsLibrary.csproj", "{D31E1A81-F11A-4C41-92B8-0F2644BC7D19}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IRemotingCourseLogic", "IRemotingCourseLogic\IRemotingCourseLogic.csproj", "{B55F827F-A240-4354-9F4D-AAB372ABEF0F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,10 @@ Global
 		{D31E1A81-F11A-4C41-92B8-0F2644BC7D19}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D31E1A81-F11A-4C41-92B8-0F2644BC7D19}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D31E1A81-F11A-4C41-92B8-0F2644BC7D19}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B55F827F-A240-4354-9F4D-AAB372ABEF0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B55F827F-A240-4354-9F4D-AAB372ABEF0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B55F827F-A240-4354-9F4D-AAB372ABEF0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B55F827F-A240-4354-9F4D-AAB372ABEF0F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
