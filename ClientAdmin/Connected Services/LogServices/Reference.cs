@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace HttpClient.LogServices {
+namespace ClientAdmin.LogServices {
     using System.Runtime.Serialization;
     using System;
     
@@ -111,19 +111,19 @@ namespace HttpClient.LogServices {
     public interface ILogService {
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/ILogService/GetLogs", ReplyAction="http://tempuri.org/ILogService/GetLogsResponse")]
-        HttpClient.LogServices.TimestampLog[] GetLogs(string filter);
+        ClientAdmin.LogServices.TimestampLog[] GetLogs(string filter);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/ILogService/GetLogs", ReplyAction="http://tempuri.org/ILogService/GetLogsResponse")]
-        System.Threading.Tasks.Task<HttpClient.LogServices.TimestampLog[]> GetLogsAsync(string filter);
+        System.Threading.Tasks.Task<ClientAdmin.LogServices.TimestampLog[]> GetLogsAsync(string filter);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    public interface ILogServiceChannel : HttpClient.LogServices.ILogService, System.ServiceModel.IClientChannel {
+    public interface ILogServiceChannel : ClientAdmin.LogServices.ILogService, System.ServiceModel.IClientChannel {
     }
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    public partial class LogServiceClient : System.ServiceModel.ClientBase<HttpClient.LogServices.ILogService>, HttpClient.LogServices.ILogService {
+    public partial class LogServiceClient : System.ServiceModel.ClientBase<ClientAdmin.LogServices.ILogService>, ClientAdmin.LogServices.ILogService {
         
         public LogServiceClient() {
         }
@@ -144,11 +144,11 @@ namespace HttpClient.LogServices {
                 base(binding, remoteAddress) {
         }
         
-        public HttpClient.LogServices.TimestampLog[] GetLogs(string filter) {
+        public ClientAdmin.LogServices.TimestampLog[] GetLogs(string filter) {
             return base.Channel.GetLogs(filter);
         }
         
-        public System.Threading.Tasks.Task<HttpClient.LogServices.TimestampLog[]> GetLogsAsync(string filter) {
+        public System.Threading.Tasks.Task<ClientAdmin.LogServices.TimestampLog[]> GetLogsAsync(string filter) {
             return base.Channel.GetLogsAsync(filter);
         }
     }

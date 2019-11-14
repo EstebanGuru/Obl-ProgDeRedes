@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="152c8ccf-b00b-48c6-955d-0c83a2fd28db" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="ae693a59-3c7b-4826-ba43-59f7cfe37335" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
   <ClientOptions>
     <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
     <GenerateTaskBasedAsynchronousMethod>true</GenerateTaskBasedAsynchronousMethod>
@@ -22,11 +22,11 @@
     <MetadataSource Address="http://localhost:4321/LogService" Protocol="http" SourceId="1" />
   </MetadataSources>
   <Metadata>
-    <MetadataFile FileName="LogService.wsdl" MetadataType="Wsdl" ID="c87d4a19-f85a-4c8b-b9d7-60b77c1d4c0a" SourceId="1" SourceUrl="http://localhost:4321/LogService?wsdl" />
-    <MetadataFile FileName="LogService.xsd" MetadataType="Schema" ID="fe3393d5-abe9-4b95-90c2-37a6225ebefd" SourceId="1" SourceUrl="http://localhost:4321/LogService?xsd=xsd2" />
-    <MetadataFile FileName="LogService.disco" MetadataType="Disco" ID="a5d57413-926d-43f7-bef4-9b3e8de411c4" SourceId="1" SourceUrl="http://localhost:4321/LogService?disco" />
-    <MetadataFile FileName="LogService1.xsd" MetadataType="Schema" ID="3e7324b1-2822-4d39-a0ea-c2b21b33367e" SourceId="1" SourceUrl="http://localhost:4321/LogService?xsd=xsd0" />
-    <MetadataFile FileName="LogService2.xsd" MetadataType="Schema" ID="7d53e7cc-5283-4ac5-88f7-205a0b6ddc6a" SourceId="1" SourceUrl="http://localhost:4321/LogService?xsd=xsd1" />
+    <MetadataFile FileName="LogService.wsdl" MetadataType="Wsdl" ID="60641fb7-b4b7-4b9b-984c-31b79263cfac" SourceId="1" SourceUrl="http://localhost:4321/LogService?wsdl" />
+    <MetadataFile FileName="LogService.xsd" MetadataType="Schema" ID="8fc2cbef-186f-4261-8ca8-b7d46cab699c" SourceId="1" SourceUrl="http://localhost:4321/LogService?xsd=xsd2" />
+    <MetadataFile FileName="LogService.disco" MetadataType="Disco" ID="46804ef4-b088-4a1e-99a8-41338630b5da" SourceId="1" SourceUrl="http://localhost:4321/LogService?disco" />
+    <MetadataFile FileName="LogService1.xsd" MetadataType="Schema" ID="7086a547-aa06-4be3-b97d-2116c3a21fd9" SourceId="1" SourceUrl="http://localhost:4321/LogService?xsd=xsd0" />
+    <MetadataFile FileName="LogService2.xsd" MetadataType="Schema" ID="d45890b6-4afc-4df6-87d1-9d288cfdea49" SourceId="1" SourceUrl="http://localhost:4321/LogService?xsd=xsd1" />
   </Metadata>
   <Extensions>
     <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />

@@ -9,7 +9,10 @@ using ProtocolLibrary;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Server.Logs;
+using LogsLibrary;
+using System.Runtime.Remoting;
+using System.Runtime.Remoting.Channels;
+using System.Runtime.Remoting.Channels.Tcp;
 
 namespace Server
 {
@@ -30,6 +33,14 @@ namespace Server
             serverSocket = ConfigServer();
             clients = new List<Utils.StudentSocket>();
             logs = new LogsLogic();
+            var remotingServiceTcpChannel = new TcpChannel(7000);
+            ChannelServices.RegisterChannel(
+                remotingServiceTcpChannel,
+                false);
+            RemotingConfiguration.RegisterWellKnownServiceType(
+                typeof(CourseLogic),
+                "courseLogicService",
+                WellKnownObjectMode.SingleCall);
             await Task.Run(() => ListenClients(serverSocket).ConfigureAwait(false));
             await Task.Run(() => ShowMenu());
         }
@@ -37,7 +48,7 @@ namespace Server
         private static Socket ConfigServer()
         {
             //string ipAddress = File.ReadAllText(@"configFile.txt");
-            string ipAddress = "10.10.10.51";
+            string ipAddress = "192.168.1.45";
             var serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             var ipEndPoint = new IPEndPoint(IPAddress.Parse(ipAddress), 6000);
             serverSocket.Bind(ipEndPoint);

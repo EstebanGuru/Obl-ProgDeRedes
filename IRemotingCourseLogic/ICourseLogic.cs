@@ -2,9 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
-namespace Server.Domain
+namespace IRemotingCourseLogic
 {
+    public interface ICourseLogic
+    {
+        string AddCalificationRemoting(string courseName, int studentId, int calification);
+
+        List<StudentCourse> GetTopCalifications();
+    }
+
+    [Serializable]
     public class StudentCourse
     {
         public int StudentId { get; set; }

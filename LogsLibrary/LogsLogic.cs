@@ -1,17 +1,19 @@
-﻿using System;
-using System.Configuration;
+﻿using DTOs;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Messaging;
-using DTOs;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace Server.Logs
+namespace LogsLibrary
 {
     public class LogsLogic
     {
         public string QueuePath { get; set; }
         public LogsLogic()
         {
-            //QueuePath = ConfigurationManager.AppSettings[ConfigConstants.QueuePath];
-            QueuePath = ConfigConstants.QueuePath;
+            QueuePath = @".\Private$\adminQueue"; // TODO - mover a archivo config
             if (!MessageQueue.Exists(QueuePath))
             {
                 MessageQueue.Create(QueuePath);
