@@ -1,6 +1,7 @@
 ﻿using ClientAdmin.Models;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -11,7 +12,7 @@ namespace ClientAdmin
     class Program
     {
         public static HttpClient WebClient = new HttpClient();
-        private string Endpoint = "https://localhost:44318/api/"; //TODO - mover a constante
+        private string Endpoint = ConfigurationManager.AppSettings["Endpoint"];
         public static string token;
         static void Main(string[] args)
         {
@@ -32,6 +33,7 @@ namespace ClientAdmin
                     Console.WriteLine("1: View Logs ");
                     Console.WriteLine("2: Create Teacher ");
                     Console.WriteLine("3: Qualify material ");
+                    Console.WriteLine("4: Get top califications ");
                     string strOption = Console.ReadLine();
                     int option = Int32.Parse(strOption);
                     switch (option)
@@ -45,12 +47,37 @@ namespace ClientAdmin
                         case 3:
                             await program.HandleAddCalification();
                             break;
+                        case 4:
+                            await program.HandleGetCalifications();
+                            break;
                         default:
                             break;
                     }
                     Console.WriteLine("");
                 }
                 
+            }
+        }
+
+        private async Task HandleGetCalifications()
+        {
+            string postCalification = Endpoint + "Califications";
+            HttpResponseMessage httpResponseMsg = WebClient.GetAsync(postCalification).Result;
+            if (httpResponseMsg.IsSuccessStatusCode)
+            {
+                List<StudentCourse> topCalifications = httpResponseMsg.Content.ReadAsAsync<List<StudentCourse>>().Result;
+                foreach (var item in topCalifications)
+                {
+                    Console.WriteLine("Student id: {0}", item.StudentId);
+                    Console.WriteLine("Course : {0}", item.CourseName);
+                    Console.WriteLine("Calification: {0}", item.Calification);
+                    Console.WriteLine("**************");
+                }
+            }
+            else
+            {
+                string msg = httpResponseMsg.Content.ReadAsAsync<BadRequestResponse>().Result.Message;
+                Console.WriteLine(msg);
             }
         }
 
@@ -76,8 +103,8 @@ namespace ClientAdmin
             }
             else
             {
-                string msg = await httpResponseMsg.Content.ReadAsStringAsync();
-                Console.WriteLine("The following error ocurred {0}", msg);
+                string msg = httpResponseMsg.Content.ReadAsAsync<BadRequestResponse>().Result.Message;
+                Console.WriteLine(msg);
             }
         }
 
@@ -106,8 +133,8 @@ namespace ClientAdmin
             }
             else
             {
-                string msg = await httpResponseMsg.Content.ReadAsStringAsync();
-                Console.WriteLine("The following error ocurred {0}", msg);
+                string msg = httpResponseMsg.Content.ReadAsAsync<BadRequestResponse>().Result.Message;
+                Console.WriteLine(msg);
             }
 
         }
@@ -124,13 +151,22 @@ namespace ClientAdmin
                 Password = password,
             };
             string loginEndpoint = Endpoint + "login";
-            HttpResponseMessage httpResponseMsg = WebClient.PostAsJsonAsync(loginEndpoint, credentials).Result;
-            if (httpResponseMsg.IsSuccessStatusCode)
+            try
             {
-                token = httpResponseMsg.Content.ReadAsAsync<Session>().Result.Id;
-            } else
+                HttpResponseMessage httpResponseMsg = WebClient.PostAsJsonAsync(loginEndpoint, credentials).Result;
+                if (httpResponseMsg.IsSuccessStatusCode)
+                {
+                    token = httpResponseMsg.Content.ReadAsAsync<Session>().Result.Id;
+                }
+                else
+                {
+                    string msg = httpResponseMsg.Content.ReadAsAsync<BadRequestResponse>().Result.Message;
+                    Console.WriteLine(msg);
+                }
+            }
+            catch (Exception e)
             {
-                Console.WriteLine(httpResponseMsg.Content.ReadAsStringAsync());
+                Console.WriteLine(e.Message);
             }
         }
 
@@ -155,7 +191,7 @@ namespace ClientAdmin
                     HandleRequestLogs("CreateStudent");
                     break;
                 case 3:
-                    HandleRequestLogs("CreateCourse"); // Cambiar por docentes.
+                    HandleRequestLogs("CreateTeacher"); // Cambiar por docentes.
                     break;
                 case 4:
                     HandleRequestLogs("CreateCourse");
@@ -176,23 +212,30 @@ namespace ClientAdmin
         }
         private static void HandleRequestLogs(string filter)
         {
-            using (LogServices.LogServiceClient client = new LogServices.LogServiceClient())
+            try
             {
-                try
+                using (LogServices.LogServiceClient client = new LogServices.LogServiceClient())
                 {
-                    var logs = client.GetLogs(filter);
-                    foreach (var item in logs)
+                    try
                     {
-                        Console.WriteLine(item.Message);
+                        var logs = client.GetLogs(filter);
+                        foreach (var item in logs)
+                        {
+                            Console.WriteLine(item.Message);
 
+                        }
+                        Console.ReadLine();
                     }
-                    Console.ReadLine();
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
 
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
             }
         }
     }

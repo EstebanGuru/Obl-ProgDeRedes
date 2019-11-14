@@ -108,7 +108,7 @@ namespace ServerAdmin.Controllers
                     BadRequest("Some error in data base " + e.Message);
                 }
             }
-            Logs.SendTimestamp("CreateStudent", "admin", "Teacher added: " + teacherDTO.Name);
+            Logs.SendTimestamp("CreateTeacher", "admin", "Teacher added: " + teacherDTO.Name);
             return Ok("Teacher created succesfully");
         }
 
