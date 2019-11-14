@@ -11,13 +11,14 @@ using System.Web.Http.Description;
 using ServerAdmin;
 using ServerAdmin.Models;
 using LogsLibrary;
+using System.Configuration;
 
 namespace ServerAdmin.Controllers
 {
     public class TeachersController : ApiController
     {
         private ServerAdminEntities db = new ServerAdminEntities();
-        private LogsLogic Logs = new LogsLogic(); 
+        private LogsLogic Logs = new LogsLogic(ConfigurationManager.AppSettings.Get("LocalPrivateQueue")); 
 
         // GET: api/Teachers
         public IQueryable<Teacher> GetTeachers()

@@ -13,6 +13,7 @@ using LogsLibrary;
 using System.Runtime.Remoting;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Tcp;
+using System.Configuration;
 
 namespace Server
 {
@@ -32,7 +33,8 @@ namespace Server
             Protocol = new Protocol();
             serverSocket = ConfigServer();
             clients = new List<Utils.StudentSocket>();
-            logs = new LogsLogic();
+            string queuePath = ConfigurationManager.AppSettings["LocalPrivateQueue"];
+            logs = new LogsLogic(queuePath);
             var remotingServiceTcpChannel = new TcpChannel(7000);
             ChannelServices.RegisterChannel(
                 remotingServiceTcpChannel,

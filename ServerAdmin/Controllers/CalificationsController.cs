@@ -2,6 +2,7 @@
 using ServerAdmin.Models;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -12,6 +13,7 @@ namespace ServerAdmin.Controllers
 {
     public class CalificationsController : ApiController
     {
+        private string RemoteAddress = ConfigurationManager.AppSettings["RemotingAddress"];
         [Route("api/Calification")]
         [ResponseType(typeof(string))]
         public IHttpActionResult PostCalificaion(StudentCourseDTO calification)
@@ -20,10 +22,9 @@ namespace ServerAdmin.Controllers
             {
                 return BadRequest(ModelState);
             }
-
             var remoteServer = (ICourseLogic)Activator.GetObject(
                 typeof(ICourseLogic),
-                "tcp://192.168.1.45:7000/courseLogicService");
+                RemoteAddress);
             string response = remoteServer.AddCalificationRemoting(calification.CourseName, calification.StudentId, calification.Calification);
             if (response.Equals("OK"))
             {
@@ -42,12 +43,12 @@ namespace ServerAdmin.Controllers
             {
                 var remoteServer = (ICourseLogic)Activator.GetObject(
                 typeof(ICourseLogic),
-                "tcp://192.168.1.45:7000/courseLogicService");
+                RemoteAddress);
                 List<StudentCourse> response = remoteServer.GetTopCalifications();
                 return Ok(response);
 
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 return BadRequest("Error trying to get califications");
             }

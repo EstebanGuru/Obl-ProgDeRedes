@@ -11,9 +11,10 @@ namespace LogsLibrary
     public class LogsLogic
     {
         public string QueuePath { get; set; }
-        public LogsLogic()
+        public LogsLogic(string queuePath)
         {
-            QueuePath = @".\Private$\adminQueue"; // TODO - mover a archivo config
+            //QueuePath = @".\Private$\adminQueue"; // TODO - mover a archivo config
+            QueuePath = queuePath;
             if (!MessageQueue.Exists(QueuePath))
             {
                 MessageQueue.Create(QueuePath);
